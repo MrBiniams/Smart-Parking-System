@@ -1,4 +1,4 @@
-### Smart Parking System
+# Smart Parking System
 
 Full-stack parking platform using Strapi (backend) and Next.js (frontend). Features locations/slots, bookings, payments (TeleBirr), real-time updates, and CMS content (hero, blogs, testimonials, footer, about).
 
