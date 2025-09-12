@@ -16,6 +16,7 @@ const Hero = () => {
   const handleBookNow = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
     if (!user) {
+      console.log('Opening auth modal...');//debug line
       setIsAuthModalOpen(true);
       return;
     }
@@ -39,7 +40,7 @@ const Hero = () => {
   };
 
   return (
-    <section className="relative min-h-[80vh] lg:h-screen flex items-center justify-center bg-gradient-to-r from-blue-600 to-blue-800 text-white overflow-hidden">
+    <section className="relative min-h-[105vh] lg:h-screen flex items-center justify-center bg-gradient-to-r from-blue-600 to-blue-800 text-white overflow-hidden">
       {/* Auth Buttons */}
       <div className="absolute top-4 right-4 z-20 flex gap-4">
         {!user ? (
@@ -63,18 +64,19 @@ const Hero = () => {
       </div>
 
       <div className="container mx-auto px-4 sm:px-6">
-        <div className="flex flex-col lg:flex-row items-center justify-between gap-8 py-16 lg:py-0">
-          <div className="lg:w-1/2 text-center lg:text-left">
+      <div className="flex flex-col lg:flex-row items-center justify-start gap-8 pt-2 pb-8 lg:pt-4 lg:pb-16">
+           <div className="lg:w-1/2 text-center lg:text-left relative z-10">
             <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-4 sm:mb-6">
               {hero?.title || 'Welcome to Our Parking Service'}
             </h1>
-            <p className="text-base sm:text-lg md:text-xl mb-6 sm:mb-8 max-w-2xl mx-auto lg:mx-0">
+            <p className="text-base sm:text-lg md:text-xl mb-4 sm:mb-6 max-w-2xl mx-auto lg:mx-0">
               {hero?.description || 'Find and book parking spaces easily with our convenient service. Reserve your spot in advance and enjoy hassle-free parking.'}
             </p>
             <div className="flex flex-col sm:flex-row gap-4 sm:gap-6 justify-center lg:justify-start">
               <button
                 onClick={handleBookNow}
-                className="px-6 sm:px-8 py-2 sm:py-3 rounded-full font-semibold transition text-center bg-white text-blue-600 hover:bg-opacity-90 text-sm sm:text-base"
+                className="px-6 sm:px-8 py-2 sm:py-3 rounded-full font-semibold transition text-center bg-white text-blue-600 hover:bg-opacity-90 text-sm sm:text-base relative z-10 cursor-pointer"
+                style={{ pointerEvents: 'auto' }}
               >
                 {user ? 'Book Now' : 'Login to Book'}
               </button>

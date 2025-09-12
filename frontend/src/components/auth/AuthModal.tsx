@@ -202,9 +202,9 @@ const AuthModal = ({ isOpen, onClose }: AuthModalProps) => {
           {step === 'phone' ? (
             <form onSubmit={handlePhoneSubmit}>
               <div className="mb-4">
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-black mb-1 text-center font-semibold">
                   Phone Number
-                </label>
+              </label>
                 <PhoneInput
                   international
                   defaultCountry="ET"
@@ -212,6 +212,21 @@ const AuthModal = ({ isOpen, onClose }: AuthModalProps) => {
                   onChange={setPhoneNumber}
                   className="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white text-gray-900"
                   placeholder="Enter phone number"
+                  inputComponent={({ className, ...props }) => (
+                    <input
+                      {...props}
+                      className={`${className} text-gray-900 placeholder-gray-500`}
+                      style={{
+                        color: '#1F2937',
+                        backgroundColor: 'white',
+                        border: '1px solid #D1D5DB',
+                        borderRadius: '6px',
+                        padding: '8px',
+                        width: '100%',
+                        fontSize: '16px'
+                      }}
+                    />
+                  )}
                 />
               </div>
 
