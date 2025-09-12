@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="100%" height="100%" viewBox="0 0 400 300" preserveAspectRatio="xMidYMid meet" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background Elements -->
+  <rect width="400" height="300" fill="#3B82F6" fill-opacity="0.1"/>
+  
+  <!-- Parking Lot -->
+  <rect x="100" y="75" width="200" height="150" rx="10" fill="white" fill-opacity="0.9"/>
+  
+  <!-- Parking Lines -->
+  <rect x="125" y="100" width="50" height="100" rx="5" fill="#E5E7EB"/>
+  <rect x="225" y="100" width="50" height="100" rx="5" fill="#E5E7EB"/>
+  
+  <!-- Parking Spots -->
+  <rect x="130" y="105" width="40" height="30" rx="2.5" fill="#3B82F6" fill-opacity="0.2"/>
+  <rect x="130" y="145" width="40" height="30" rx="2.5" fill="#3B82F6" fill-opacity="0.2"/>
+  <rect x="130" y="185" width="40" height="30" rx="2.5" fill="#3B82F6" fill-opacity="0.2"/>
+  
+  <rect x="230" y="105" width="40" height="30" rx="2.5" fill="#3B82F6" fill-opacity="0.2"/>
+  <rect x="230" y="145" width="40" height="30" rx="2.5" fill="#3B82F6" fill-opacity="0.2"/>
+  <rect x="230" y="185" width="40" height="30" rx="2.5" fill="#3B82F6" fill-opacity="0.2"/>
+  
+  <!-- Parking P Symbol -->
+  <circle cx="150" cy="120" r="10" fill="#3B82F6"/>
+  <path d="M150 110V130" stroke="white" stroke-width="4" stroke-linecap="round"/>
+  <path d="M150 120L160 120" stroke="white" stroke-width="4" stroke-linecap="round"/>
+  
+  <circle cx="250" cy="120" r="10" fill="#3B82F6"/>
+  <path d="M250 110V130" stroke="white" stroke-width="4" stroke-linecap="round"/>
+  <path d="M250 120L260 120" stroke="white" stroke-width="4" stroke-linecap="round"/>
+  
+  <!-- Car Icons -->
+  <g transform="translate(135, 160)">
+    <rect width="30" height="15" rx="2.5" fill="#3B82F6"/>
+    <circle cx="7.5" cy="15" r="4" fill="#1E3A8A"/>
+    <circle cx="22.5" cy="15" r="4" fill="#1E3A8A"/>
+  </g>
+  
+  <g transform="translate(235, 160)">
+    <rect width="30" height="15" rx="2.5" fill="#3B82F6"/>
+    <circle cx="7.5" cy="15" r="4" fill="#1E3A8A"/>
+    <circle cx="22.5" cy="15" r="4" fill="#1E3A8A"/>
+  </g>
+  
+  <!-- Decorative Elements -->
+  <circle cx="50" cy="50" r="25" fill="#3B82F6" fill-opacity="0.2"/>
+  <circle cx="350" cy="250" r="25" fill="#3B82F6" fill-opacity="0.2"/>
+  <circle cx="75" cy="250" r="15" fill="#3B82F6" fill-opacity="0.2"/>
+  <circle cx="325" cy="50" r="15" fill="#3B82F6" fill-opacity="0.2"/>
+</svg> 

@@ -1,0 +1,91 @@
+{
+  "kind": "collectionType",
+  "collectionName": "bookings",
+  "info": {
+    "singularName": "booking",
+    "pluralName": "bookings",
+    "displayName": "Booking",
+    "description": "Parking slot bookings"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "attributes": {
+    "user": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "plugin::users-permissions.user",
+      "inversedBy": "bookings"
+    },
+    "slot": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::slot.slot"
+    },
+    "startTime": {
+      "type": "datetime",
+      "required": true
+    },
+    "endTime": {
+      "type": "datetime",
+      "required": false
+    },
+    "plateNumber": {
+      "type": "string",
+      "required": true
+    },
+    "bookingStatus": {
+      "type": "enumeration",
+      "enum": [
+        "pending",
+        "confirmed",
+        "active",
+        "completed",
+        "cancelled"
+      ],
+      "required": true,
+      "default": "pending"
+    },
+    "totalPrice": {
+      "type": "decimal",
+      "required": false,
+      "min": 0,
+      "default": 0
+    },
+    "paymentStatus": {
+      "type": "enumeration",
+      "enum": [
+        "pending",
+        "paid",
+        "failed",
+        "refunded"
+      ],
+      "required": true,
+      "default": "pending"
+    },
+    "transaction": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::transaction.transaction",
+      "mappedBy": "booking"
+    },
+    "originalBooking": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::booking.booking",
+      "inversedBy": "extendedBookings"
+    },
+    "extendedBookings": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::booking.booking",
+      "mappedBy": "originalBooking"
+    },
+    "attendantUser": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "plugin::users-permissions.user",
+      "private": true
+    }
+  }
+}

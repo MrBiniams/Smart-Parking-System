@@ -1,0 +1,22 @@
+{
+  "collectionName": "components_location_time_range",
+  "info": {
+    "displayName": "Time Range",
+    "description": "Opening and closing time"
+  },
+  "options": {},
+  "attributes": {
+    "open": {
+      "type": "time",
+      "required": true
+    },
+    "close": {
+      "type": "time",
+      "required": true
+    },
+    "isClosed": {
+      "type": "boolean",
+      "default": false
+    }
+  }
+} 

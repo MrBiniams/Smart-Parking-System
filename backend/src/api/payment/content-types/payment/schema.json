@@ -1,0 +1,83 @@
+{
+  "kind": "collectionType",
+  "collectionName": "payments",
+  "info": {
+    "singularName": "payment",
+    "pluralName": "payments",
+    "displayName": "Payment",
+    "description": "Payment records for the system"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "amount": {
+      "type": "decimal",
+      "required": true,
+      "min": 0
+    },
+    "currency": {
+      "type": "string",
+      "required": true,
+      "default": "ETB"
+    },
+    "status": {
+      "type": "enumeration",
+      "enum": [
+        "pending",
+        "completed",
+        "failed",
+        "cancelled"
+      ],
+      "default": "pending",
+      "required": true
+    },
+    "transactionId": {
+      "type": "string",
+      "required": true,
+      "unique": true
+    },
+    "paymentMethod": {
+      "type": "enumeration",
+      "enum": [
+        "telebirr",
+        "cbe-birr"
+      ],
+      "required": true
+    },
+    "paymentProviderTransactionId": {
+      "type": "string"
+    },
+    "paymentProviderReference": {
+      "type": "string"
+    },
+    "paymentProviderResponse": {
+      "type": "json"
+    },
+    "metadata": {
+      "type": "json",
+      "required": true
+    },
+    "customerPhone": {
+      "type": "string"
+    },
+    "customerEmail": {
+      "type": "email"
+    },
+    "customerName": {
+      "type": "string"
+    },
+    "description": {
+      "type": "text"
+    },
+    "paymentUrl": {
+      "type": "string"
+    },
+    "booking": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::booking.booking"
+    }
+  }
+} 

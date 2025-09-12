@@ -1,0 +1,22 @@
+{
+  "collectionName": "components_common_button",
+  "info": {
+    "displayName": "Button",
+    "description": "A button component with text and link"
+  },
+  "options": {},
+  "attributes": {
+    "text": {
+      "type": "string",
+      "required": true
+    },
+    "href": {
+      "type": "string",
+      "required": true
+    },
+    "primary": {
+      "type": "boolean",
+      "default": false
+    }
+  }
+} 

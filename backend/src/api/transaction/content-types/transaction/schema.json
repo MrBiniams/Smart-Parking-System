@@ -1,0 +1,70 @@
+{
+  "kind": "collectionType",
+  "collectionName": "transactions",
+  "info": {
+    "singularName": "transaction",
+    "pluralName": "transactions",
+    "displayName": "Transaction",
+    "description": "Payment transaction records"
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "attributes": {
+    "transactionId": {
+      "type": "string",
+      "required": true,
+      "unique": true
+    },
+    "booking": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::booking.booking",
+      "inversedBy": "transaction"
+    },
+    "amount": {
+      "type": "decimal",
+      "required": true,
+      "min": 0
+    },
+    "currency": {
+      "type": "string",
+      "required": true,
+      "default": "ETB"
+    },
+    "paymentMethod": {
+      "type": "enumeration",
+      "enum": [
+        "telebirr",
+        "cbe-birr"
+      ],
+      "required": true
+    },
+    "status": {
+      "type": "enumeration",
+      "enum": [
+        "pending",
+        "completed",
+        "failed",
+        "refunded"
+      ],
+      "required": true,
+      "default": "pending"
+    },
+    "paymentProviderResponse": {
+      "type": "json"
+    },
+    "paymentProviderTransactionId": {
+      "type": "string"
+    },
+    "paymentProviderReference": {
+      "type": "string"
+    },
+    "errorMessage": {
+      "type": "text"
+    },
+    "metadata": {
+      "type": "json"
+    }
+  }
+}

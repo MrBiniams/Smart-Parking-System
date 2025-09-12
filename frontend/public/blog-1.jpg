@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="400" height="300" viewBox="0 0 400 300" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="400" height="300" fill="#DBEAFE"/>
+  <circle cx="200" cy="150" r="80" fill="#60A5FA"/>
+  <text x="200" y="160" text-anchor="middle" fill="#1E40AF" font-family="Arial" font-size="24">Smart Parking</text>
+</svg> 

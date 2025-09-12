@@ -1,0 +1,28 @@
+{
+  "kind": "singleType",
+  "collectionName": "footers",
+  "info": {
+    "singularName": "footer",
+    "pluralName": "footers",
+    "displayName": "Footer",
+    "description": "Footer section content"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "attributes": {
+    "description": {
+      "type": "text",
+      "required": true
+    },
+    "quickLinks": {
+      "type": "json",
+      "required": true
+    }
+  },
+  "pluginOptions": {
+    "graphql": {
+      "enabled": true
+    }
+  }
+} 

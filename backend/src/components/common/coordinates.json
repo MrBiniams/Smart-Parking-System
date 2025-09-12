@@ -1,0 +1,22 @@
+{
+  "collectionName": "components_common_coordinates",
+  "info": {
+    "displayName": "Coordinates",
+    "description": "Geographic coordinates"
+  },
+  "options": {},
+  "attributes": {
+    "lat": {
+      "type": "decimal",
+      "required": true,
+      "min": -90,
+      "max": 90
+    },
+    "lng": {
+      "type": "decimal",
+      "required": true,
+      "min": -180,
+      "max": 180
+    }
+  }
+} 

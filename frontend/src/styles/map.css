@@ -1,0 +1,21 @@
+.custom-marker {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.custom-marker.available {
+  filter: drop-shadow(0 0 2px rgba(34, 197, 94, 0.5));
+}
+
+.custom-marker.occupied {
+  filter: drop-shadow(0 0 2px rgba(239, 68, 68, 0.5));
+}
+
+.leaflet-popup-content {
+  margin: 0 !important;
+}
+
+.leaflet-popup-content-wrapper {
+  padding: 0 !important;
+} 

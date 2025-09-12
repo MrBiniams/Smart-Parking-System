@@ -1,0 +1,28 @@
+{
+  "kind": "singleType",
+  "collectionName": "abouts",
+  "info": {
+    "singularName": "about",
+    "pluralName": "abouts",
+    "displayName": "About",
+    "description": "About section content"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "attributes": {
+    "title": {
+      "type": "string",
+      "required": true
+    },
+    "features": {
+      "type": "json",
+      "required": true
+    }
+  },
+  "pluginOptions": {
+    "graphql": {
+      "enabled": true
+    }
+  }
+} 

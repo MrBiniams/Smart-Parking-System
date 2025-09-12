@@ -1,0 +1,281 @@
+{
+  "hero": {
+    "title": "Smart Parking Solutions",
+    "description": "Find and book parking spots in real-time. Save time and eliminate parking hassles.",
+    "buttons": [
+      {
+        "text": "Book Now",
+        "href": "/booking",
+        "primary": true
+      },
+      {
+        "text": "Learn More",
+        "href": "/about",
+        "primary": false
+      }
+    ]
+  },
+  "about": {
+    "title": "About Us",
+    "features": [
+      {
+        "icon": "🎯",
+        "title": "Our Mission",
+        "description": "To revolutionize parking management through smart technology and exceptional service."
+      },
+      {
+        "icon": "👥",
+        "title": "Our Team",
+        "description": "Dedicated professionals committed to making parking hassle-free for everyone."
+      },
+      {
+        "icon": "💡",
+        "title": "Innovation",
+        "description": "Leveraging cutting-edge technology to provide seamless parking solutions."
+      }
+    ]
+  },
+  "blog": {
+    "title": "Latest Updates",
+    "posts": [
+      {
+        "id": 1,
+        "title": "Smart Parking Innovation",
+        "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore.",
+        "image": "/blog-1.jpg"
+      },
+      {
+        "id": 2,
+        "title": "IoT in Parking Management",
+        "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore.",
+        "image": "/blog-2.jpg"
+      },
+      {
+        "id": 3,
+        "title": "Future of Urban Parking",
+        "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore.",
+        "image": "/blog-3.jpg"
+      }
+    ]
+  },
+  "testimonials": {
+    "title": "What Our Users Say",
+    "items": [
+      {
+        "name": "John Doe",
+        "role": "Regular User",
+        "content": "The best parking solution I've ever used. It saves me so much time!",
+        "avatar": "/avatar-1.jpg"
+      },
+      {
+        "name": "Jane Smith",
+        "role": "Business Owner",
+        "content": "This platform has transformed how we manage parking at our facility.",
+        "avatar": "/avatar-2.jpg"
+      },
+      {
+        "name": "Mike Johnson",
+        "role": "Property Manager",
+        "content": "Excellent service and very user-friendly interface. Highly recommended!",
+        "avatar": "/avatar-3.jpg"
+      }
+    ]
+  },
+  "footer": {
+    "description": "Smart parking solutions for a better future.",
+    "quickLinks": [
+      {
+        "text": "About Us",
+        "href": "/about"
+      },
+      {
+        "text": "Services",
+        "href": "/services"
+      },
+      {
+        "text": "Contact",
+        "href": "/contact"
+      },
+      {
+        "text": "Blog",
+        "href": "/blog"
+      }
+    ],
+    "contact": {
+      "address": "123 Parking Street",
+      "city": "City, Country",
+      "phone": "(123) 456-7890",
+      "email": "info@siso-link.com"
+    },
+    "social": [
+      {
+        "name": "Facebook",
+        "href": "#",
+        "icon": "facebook"
+      },
+      {
+        "name": "Twitter",
+        "href": "#",
+        "icon": "twitter"
+      },
+      {
+        "name": "Instagram",
+        "href": "#",
+        "icon": "instagram"
+      }
+    ]
+  },
+  "booking": {
+    "title": "Find Your Perfect Parking Spot",
+    "subtitle": "Search and book parking spots in real-time",
+    "locations": [
+      {
+        "id": "loc1",
+        "name": "Downtown Parking",
+        "address": "123 Main St, Downtown",
+        "coordinates": { "lat": 40.7128, "lng": -74.0060 }
+      },
+      {
+        "id": "loc2",
+        "name": "Airport Parking",
+        "address": "456 Airport Rd, Terminal 1",
+        "coordinates": { "lat": 40.6413, "lng": -73.7781 }
+      },
+      {
+        "id": "loc3",
+        "name": "Shopping Mall Parking",
+        "address": "789 Mall Ave, Shopping District",
+        "coordinates": { "lat": 40.7505, "lng": -73.9934 }
+      }
+    ]
+  },
+  "bookingSection": {
+    "title": "Find Parking Spots",
+    "subtitle": "Book your parking spot in advance",
+    "locations": [
+      {
+        "id": "loc_01",
+        "name": "Bole Medhanialem",
+        "address": "Bole Road, Addis Ababa",
+        "coordinates": {
+          "lat": 9.0105,
+          "lng": 38.7651
+        },
+        "slots": [
+          {
+            "id": "slot_01_a1",
+            "name": "A1",
+            "status": "available",
+            "type": "standard",
+            "coordinates": {
+              "lat": 9.0107,
+              "lng": 38.7653
+            }
+          },
+          {
+            "id": "slot_01_a2",
+            "name": "A2",
+            "status": "occupied",
+            "type": "standard",
+            "coordinates": {
+              "lat": 9.0106,
+              "lng": 38.7652
+            }
+          },
+          {
+            "id": "slot_01_b1",
+            "name": "B1",
+            "status": "available",
+            "type": "premium",
+            "coordinates": {
+              "lat": 9.0104,
+              "lng": 38.7650
+            }
+          }
+        ]
+      },
+      {
+        "id": "loc_02",
+        "name": "Meskel Square",
+        "address": "Meskel Square, Addis Ababa",
+        "coordinates": {
+          "lat": 8.9806,
+          "lng": 38.7578
+        },
+        "slots": [
+          {
+            "id": "slot_02_a1",
+            "name": "A1",
+            "status": "available",
+            "type": "standard",
+            "coordinates": {
+              "lat": 8.9808,
+              "lng": 38.7580
+            }
+          },
+          {
+            "id": "slot_02_a2",
+            "name": "A2",
+            "status": "available",
+            "type": "standard",
+            "coordinates": {
+              "lat": 8.9807,
+              "lng": 38.7579
+            }
+          },
+          {
+            "id": "slot_02_b1",
+            "name": "B1",
+            "status": "occupied",
+            "type": "premium",
+            "coordinates": {
+              "lat": 8.9805,
+              "lng": 38.7577
+            }
+          }
+        ]
+      },
+      {
+        "id": "loc_03",
+        "name": "Edna Mall",
+        "address": "Bole, Addis Ababa",
+        "coordinates": {
+          "lat": 8.9946,
+          "lng": 38.7891
+        },
+        "slots": [
+          {
+            "id": "slot_03_a1",
+            "name": "A1",
+            "status": "available",
+            "type": "standard",
+            "coordinates": {
+              "lat": 8.9948,
+              "lng": 38.7893
+            }
+          },
+          {
+            "id": "slot_03_a2",
+            "name": "A2",
+            "status": "available",
+            "type": "premium",
+            "coordinates": {
+              "lat": 8.9947,
+              "lng": 38.7892
+            }
+          },
+          {
+            "id": "slot_03_b1",
+            "name": "B1",
+            "status": "available",
+            "type": "standard",
+            "coordinates": {
+              "lat": 8.9945,
+              "lng": 38.7890
+            }
+          }
+        ]
+      }
+    ]
+  }
+} 
