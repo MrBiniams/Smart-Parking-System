@@ -6,6 +6,9 @@ import { useUserStore } from '@/store/userStore';
 import AuthModal from '../auth/AuthModal';
 import { ProfileDrawer } from '../profile/profile-drawer';
 import Image from 'next/image';
+import Navbar from '../Navbar';
+
+// Then in the return statement, add <Navbar /> at the top
 
 const Hero = () => {
   const router = useRouter();
@@ -41,27 +44,7 @@ const Hero = () => {
 
   return (
     <section className="relative min-h-[105vh] lg:h-screen flex items-center justify-center bg-gradient-to-r from-blue-600 to-blue-800 text-white overflow-hidden">
-      {/* Auth Buttons */}
-      <div className="absolute top-4 right-4 z-20 flex gap-4">
-        {!user ? (
-          <>
-            <button
-              onClick={() => setIsAuthModalOpen(true)}
-              className="px-4 py-2 rounded-full font-semibold transition border-2 border-white hover:bg-white hover:text-blue-600 text-sm sm:text-base"
-            >
-              Login
-            </button>
-            <button
-              onClick={() => setIsAuthModalOpen(true)}
-              className="px-4 py-2 rounded-full font-semibold transition bg-white text-blue-600 hover:bg-opacity-90 text-sm sm:text-base"
-            >
-              Sign Up
-            </button>
-          </>
-        ) : (
-          <ProfileDrawer />
-        )}
-      </div>
+      <Navbar />
 
       <div className="container mx-auto px-4 sm:px-6">
       <div className="flex flex-col lg:flex-row items-center justify-start gap-8 pt-2 pb-8 lg:pt-4 lg:pb-16">
@@ -113,10 +96,6 @@ const Hero = () => {
         </svg>
       </div>
 
-      <AuthModal
-        isOpen={isAuthModalOpen}
-        onClose={() => setIsAuthModalOpen(false)}
-      />
     </section>
   );
 };

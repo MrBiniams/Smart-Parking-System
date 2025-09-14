@@ -1,6 +1,19 @@
 import Link from 'next/link';
 import { FooterSection } from '@/types';
 
+const scrollToSection = (sectionId: string) => {
+  const element = document.getElementById(sectionId);
+  if (element) {
+    // Add offset for fixed navbar
+    const offset = 80;
+    const elementPosition = element.offsetTop - offset;
+    window.scrollTo({
+      top: elementPosition,
+      behavior: 'smooth'
+    });
+  }
+};
+
 interface FooterProps {
   data: FooterSection;
 }
@@ -38,9 +51,18 @@ export default function Footer({ data }: FooterProps) {
             <ul className="space-y-2">
               {data.quickLinks.map((link, index) => (
                 <li key={index}>
-                  <Link href={link.href} className="text-gray-400 hover:text-white transition">
-                    {link.text}
-                  </Link>
+                  {link.href.startsWith('#') ? (
+                    <button
+                      onClick={() => scrollToSection(link.href.substring(1))}
+                      className="text-gray-400 hover:text-white transition cursor-pointer"
+                    >
+                      {link.text}
+                    </button>
+                  ) : (
+                    <Link href={link.href} className="text-gray-400 hover:text-white transition">
+                      {link.text}
+                    </Link>
+                  )}
                 </li>
               ))}
             </ul>

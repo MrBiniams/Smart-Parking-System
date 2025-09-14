@@ -17,6 +17,7 @@
   },
   "about": {
     "title": "About Us",
+    "description": "We are passionate about transforming the parking experience through innovative technology and exceptional service.",
     "features": [
       {
         "icon": "🎯",
@@ -35,6 +36,47 @@
       }
     ]
   },
+  "services": {
+  "title": "Our Services",
+  "services": [
+    {
+      "icon": "��",
+      "title": "Smart Parking Booking",
+      "description": "Reserve your parking spot in advance with our intuitive booking system.",
+      "features": ["Real-time availability", "Instant confirmation", "Mobile-friendly"]
+    },
+    {
+      "icon": "��",
+      "title": "Location Management",
+      "description": "Find the perfect parking spot near your destination with our smart location services.",
+      "features": ["GPS integration", "Multiple locations", "Distance calculation"]
+    },
+    {
+      "icon": "💳",
+      "title": "Secure Payments",
+      "description": "Safe and convenient payment processing with multiple payment options.",
+      "features": ["TeleBirr integration", "Secure transactions", "Multiple currencies"]
+    },
+    {
+      "icon": "⏰",
+      "title": "Time Management",
+      "description": "Flexible booking durations and easy extension options for your convenience.",
+      "features": ["Flexible timing", "Easy extensions", "Auto-renewal"]
+    },
+    {
+      "icon": "📱",
+      "title": "Mobile App",
+      "description": "Access all features on the go with our user-friendly mobile application.",
+      "features": ["iOS & Android", "Push notifications", "Offline support"]
+    },
+    {
+      "icon": "🛡️",
+      "title": "24/7 Support",
+      "description": "Round-the-clock customer support to assist you whenever you need help.",
+      "features": ["Live chat", "Phone support", "Email assistance"]
+    }
+  ]
+},
   "blog": {
     "title": "Latest Updates",
     "posts": [
@@ -85,42 +127,54 @@
     "description": "Smart parking solutions for a better future.",
     "quickLinks": [
       {
+        "text": "Home",
+        "href": "/"
+      },
+      {
         "text": "About Us",
-        "href": "/about"
+        "href": "#about"
       },
       {
-        "text": "Services",
-        "href": "/services"
+        "text": "Our Services",
+        "href": "#services"
       },
       {
-        "text": "Contact",
-        "href": "/contact"
+        "text": "Blogs",
+        "href": "#blogs"
       },
       {
-        "text": "Blog",
-        "href": "/blog"
+        "text": "Testimonials",
+        "href": "#testimonials"
+      },
+      {
+        "text": "Contact Us",
+        "href": "#contact"
+      },
+      {
+        "text": "Work with Us",
+        "href": "/work-with-us"
       }
     ],
     "contact": {
-      "address": "123 Parking Street",
-      "city": "City, Country",
-      "phone": "(123) 456-7890",
+      "address": "Addis Ababa, Ethiopia",
+      "city": "Bole Road",
+      "phone": "+251 911 234 567",
       "email": "info@siso-link.com"
     },
     "social": [
       {
         "name": "Facebook",
-        "href": "#",
+        "href": "https://facebook.com/siso-link",
         "icon": "facebook"
       },
       {
         "name": "Twitter",
-        "href": "#",
+        "href": "https://twitter.com/siso-link",
         "icon": "twitter"
       },
       {
         "name": "Instagram",
-        "href": "#",
+        "href": "https://instagram.com/siso_link",
         "icon": "instagram"
       }
     ]
@@ -275,6 +329,29 @@
             }
           }
         ]
+      }
+    ]
+  },
+  "services": {
+    "title": "Our Services",
+    "services": [
+      {
+        "icon": "🚗",
+        "title": "Smart Parking Booking",
+        "description": "Reserve your parking spot in advance with our intuitive booking system.",
+        "features": ["Real-time availability", "Instant confirmation", "Mobile-friendly"]
+      },
+      {
+        "icon": "📍",
+        "title": "Location Management",
+        "description": "Find the perfect parking spot near your destination with our smart location services.",
+        "features": ["GPS integration", "Multiple locations", "Distance calculation"]
+      },
+      {
+        "icon": "💳",
+        "title": "Secure Payments",
+        "description": "Safe and convenient payment processing with multiple payment options.",
+        "features": ["TeleBirr integration", "Secure transactions", "Multiple currencies"]
       }
     ]
   }

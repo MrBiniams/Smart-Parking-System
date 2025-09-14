@@ -35,7 +35,17 @@ export interface AboutSection {
     icon: string;
   }>;
 }
+export interface Service {
+  icon: string;
+  title: string;
+  description: string;
+  features?: string[];
+}
 
+export interface ServicesSection {
+  title: string;
+  services: Service[];
+}
 export interface BlogPost {
   id: string;
   title: string;
@@ -100,14 +110,19 @@ export interface SocialLink {
 }
 
 export interface FooterSection {
-  title: string;
   description: string;
-  links: Array<{
-    title: string;
+  quickLinks: Array<{
+    text: string;
     href: string;
   }>;
+  contact: {
+    address: string;
+    city: string;
+    phone: string;
+    email: string;
+  };
   social: Array<{
-    platform: string;
+    name: string;
     href: string;
     icon: string;
   }>;

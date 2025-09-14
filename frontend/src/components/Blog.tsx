@@ -18,7 +18,7 @@ export default function Blog({ data }: BlogProps) {
   };
 
   return (
-    <section className="py-16 sm:py-20 bg-gray-50">
+    <section id="blogs" className="py-16 sm:py-20 bg-gray-50">
       <div className="container mx-auto px-4 sm:px-6">
         <div className="text-center mb-12 sm:mb-16">
           <h2 className="text-3xl sm:text-4xl font-bold text-gray-800 mb-4">{data.title}</h2>

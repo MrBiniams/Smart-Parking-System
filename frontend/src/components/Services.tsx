@@ -1,12 +1,12 @@
-import { AboutSection } from '@/types';
+import { ServicesSection } from '@/types';
 
-interface AboutProps {
-  data: AboutSection;
+interface ServicesProps {
+  data: ServicesSection;
 }
 
-export default function About({ data }: AboutProps) {
+export default function Services({ data }: ServicesProps) {
   return (
-    <section id="about" className="py-20 sm:py-24 bg-gradient-to-br from-gray-50 to-blue-50">
+    <section id="services" className="py-20 sm:py-24 bg-white">
       <div className="container mx-auto px-4 sm:px-6">
         {/* Header */}
         <div className="text-center mb-16 sm:mb-20">
@@ -15,21 +15,21 @@ export default function About({ data }: AboutProps) {
           </h2>
           <div className="w-32 h-1 bg-gradient-to-r from-blue-500 to-blue-600 mx-auto rounded-full"></div>
           <p className="mt-6 text-lg text-gray-600 max-w-3xl mx-auto">
-            We are passionate about transforming the parking experience through innovative technology and exceptional service.
+            Discover our comprehensive range of parking solutions designed to make your life easier.
           </p>
         </div>
 
-        {/* Features Grid */}
+        {/* Services Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 lg:gap-12">
-          {data.features.map((feature, index) => (
+          {data.services.map((service, index) => (
             <div 
-              key={`${feature.title}-${index}`} 
-              className="group relative bg-white rounded-2xl p-8 shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 border border-gray-100"
+              key={`${service.title}-${index}`} 
+              className="group relative bg-gradient-to-br from-gray-50 to-white rounded-2xl p-8 shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 border border-gray-100"
             >
               {/* Icon Container */}
               <div className="relative mb-6">
                 <div className="w-20 h-20 bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl flex items-center justify-center mx-auto shadow-lg group-hover:scale-110 transition-transform duration-300">
-                  <span className="text-3xl">{feature.icon}</span>
+                  <span className="text-3xl">{service.icon}</span>
                 </div>
                 {/* Decorative circle */}
                 <div className="absolute -top-2 -right-2 w-6 h-6 bg-blue-100 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
@@ -38,11 +38,21 @@ export default function About({ data }: AboutProps) {
               {/* Content */}
               <div className="text-center">
                 <h3 className="text-2xl font-bold text-gray-900 mb-4 group-hover:text-blue-600 transition-colors duration-300">
-                  {feature.title}
+                  {service.title}
                 </h3>
-                <p className="text-gray-600 leading-relaxed text-base">
-                  {feature.description}
+                <p className="text-gray-600 leading-relaxed text-base mb-4">
+                  {service.description}
                 </p>
+                {service.features && (
+                  <ul className="text-sm text-gray-500 space-y-1">
+                    {service.features.map((feature, idx) => (
+                      <li key={idx} className="flex items-center justify-center">
+                        <span className="w-1.5 h-1.5 bg-blue-400 rounded-full mr-2"></span>
+                        {feature}
+                      </li>
+                    ))}
+                  </ul>
+                )}
               </div>
 
               {/* Hover effect border */}

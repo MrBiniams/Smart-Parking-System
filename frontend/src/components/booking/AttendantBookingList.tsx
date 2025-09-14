@@ -1,13 +1,17 @@
 import React, { useEffect, useState } from 'react';
-import { Booking } from '@/types';
+import { Booking } from '@/services/api';
 import { fetchAttendantBookings } from '@/services/api';
 import { useAuth } from '../../contexts/AuthContext';
 
 interface AttendantBookingListProps {
   locationId: string;
+  filters?: {
+    phoneNumber?: string;
+    plateNumber?: string;
+  };
 }
 
-export default function AttendantBookingList({ locationId }: AttendantBookingListProps) {
+export default function AttendantBookingList({ locationId, filters }: AttendantBookingListProps) {
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -91,17 +95,17 @@ export default function AttendantBookingList({ locationId }: AttendantBookingLis
                   </div>
                   <div className="mt-1 text-sm text-gray-600">
                     <p>Slot: {booking.slot?.name}</p>
-                    <p>User: {booking.user?.phoneNumber}</p>
+                    <p>User: {booking.user?.phoneNumber || booking.user?.email}</p>
                     <p>Start: {new Date(booking.startTime).toLocaleString()}</p>
                     <p>End: {new Date(booking.endTime).toLocaleString()}</p>
                   </div>
                 </div>
                 <div className="text-right">
                   <div className="text-sm font-medium text-gray-900">
-                    ${booking.totalPrice.toFixed(2)}
+                  ${booking.totalPrice?.toFixed(2) || '0.00'}
                   </div>
-                  <div className={`mt-1 text-xs ${getStatusColor(booking.paymentStatus)} px-2 py-1 rounded-full inline-block`}>
-                    {booking.paymentStatus}
+                  <div className={`mt-1 text-xs ${getStatusColor(booking.paymentStatus || 'unknown')} px-2 py-1 rounded-full inline-block`}>
+                      {booking.paymentStatus || 'Unknown'}
                   </div>
                 </div>
               </div>

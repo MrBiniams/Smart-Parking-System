@@ -4,12 +4,14 @@ import { useQuery } from '@apollo/client';
 import { GET_BLOGS, GET_TESTIMONIALS } from '@/graphql/queries';
 import Hero from '@/components/home/Hero';
 import About from '@/components/About';
+import Services from '@/components/Services';
 import Blog from '@/components/Blog';
 import Testimonials from '@/components/Testimonials';
+import Contact from '@/components/Contact';
 import Footer from '@/components/common/Footer';
 import Booking from '@/components/Booking';
-import content from '@/data/content.json';
-import { AboutSection, BlogSection, TestimonialsSection, FooterSection, BookingSection } from '@/types';
+import content from '@/data/content.json' assert { type: 'json' };
+import { AboutSection, BlogSection, TestimonialsSection, FooterSection, BookingSection, ServicesSection } from '@/types';
 import { useUserStore, UserRole } from '@/store/userStore';
 import { useState, useEffect } from 'react';
 import authService from '@/services/auth.service';
@@ -22,6 +24,7 @@ interface Content {
   testimonials: TestimonialsSection;
   footer: FooterSection;
   bookingSection: BookingSection;
+  services: ServicesSection;
 }
 
 export default function Home() {
@@ -376,8 +379,10 @@ export default function Home() {
       {permissions.canViewHero && <Hero />}
       <Booking data={content.bookingSection} />
       {permissions.canViewAbout && <About data={content.about} />}
+      <Services data={content.services as ServicesSection} />
       {permissions.canViewBlog && blogs.length > 0 && <Blog data={{ title: "Latest Updates", posts: blogs }} />}
       {permissions.canViewTestimonials && testimonials.length > 0 && <Testimonials data={{ title: "What Our Users Say", items: testimonials }} />}
+      <Contact />
       {permissions.canViewFooter && <Footer data={content.footer} />}
     </main>
   );
