@@ -115,7 +115,9 @@ export default {
       path: '/bookings/attendant/my-location',
       handler: 'booking.findAttendantBookings',
       config: {
-        policies: ['api::global.is-authenticated'],
+        auth: {
+          strategy: 'jwt',
+        },
       },
     },
     {
@@ -131,7 +133,9 @@ export default {
       path: '/bookings/attendant/overstayed',
       handler: 'booking.getOverstayedVehicles',
       config: {
-        policies: ['api::global.is-authenticated'],
+        auth: {
+          strategy: 'jwt',
+        },
       },
     },
     {

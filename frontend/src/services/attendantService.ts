@@ -1,5 +1,6 @@
 import axios from 'axios';
 import { API_BASE_URL } from '../config';
+import { useUserStore } from '../store/userStore';
 
 // Import the main type instead of redefining it
 import { AttendantBooking, AttendantLocation } from '../types/attendant';
@@ -18,9 +19,18 @@ export interface AttendantApiError {
 
 class AttendantService {
   private getAuthHeaders() {
-    const token = localStorage.getItem('token');
+    // Get token from Zustand store instead of localStorage directly
+    const token = useUserStore.getState().token;
+    const localStorageToken = localStorage.getItem('token');
+    
+    console.log('=== ATTENDANT SERVICE AUTH DEBUG ===');
+    console.log('Token from Zustand store:', token);
+    console.log('Token from localStorage:', localStorageToken);
+    console.log('Using token:', token || localStorageToken);
+    console.log('====================================');
+    
     return {
-      'Authorization': `Bearer ${token}`,
+      'Authorization': `Bearer ${token || localStorageToken}`,
       'Content-Type': 'application/json',
     };
   }

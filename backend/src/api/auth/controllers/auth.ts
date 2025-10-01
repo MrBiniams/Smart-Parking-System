@@ -235,24 +235,23 @@ export default {
       const user = users?.[0];
 
       if (!user) {
-        return ctx.unauthorized('Invalid credentials');
+        return ctx.unauthorized('Phone number or email not found. Please check your credentials.');
       }
 
       // Check if user is an Attendant
       if (user.role?.name !== 'Attendant') {
-        return ctx.unauthorized('Only attendants can access this login');
+        return ctx.unauthorized('This account is not registered as an attendant. Please contact your administrator.');
       }
 
       // Verify password
       const validPassword = await strapi.plugins['users-permissions'].services.user.validatePassword(password, user.password);
       if (!validPassword) {
-        return ctx.unauthorized('Invalid credentials');
+        return ctx.unauthorized('Incorrect password. Please try again.');
       }
 
       // Generate JWT token
       const token = strapi.plugins['users-permissions'].services.jwt.issue({
         id: user.id,
-        documentId: user.documentId,
         phoneNumber: user.phoneNumber
       });
 

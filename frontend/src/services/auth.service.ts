@@ -44,6 +44,9 @@ export interface AuthResponse {
 export interface ApiError {
   message: string;
   statusCode?: number;
+  error?: {
+    message: string;
+  };
 }
 
 interface OtpResponse {
@@ -56,14 +59,19 @@ interface VerifyOtpResponse {
   jwt: string;
   user: {
     id: number;
-    username: string;
-    email: string;
+    username?: string;
+    email?: string;
     phoneNumber: string;
-    role: {
-      id: number;
+    firstName?: string;
+    lastName?: string;
+    documentId?: string;
+    avatar?: string;
+    role?: {
+      id?: number;
+      documentId?: string;
       name: string;
-      description: string;
-      type: string;
+      description?: string;
+      type?: string;
     };
   } | null;
 }
@@ -80,7 +88,14 @@ interface SignupData {
 
 class AuthService {
   private handleError(error: AxiosError<ApiError>): never {
-    const message = error.response?.data?.message || 'An error occurred';
+    // Try different possible error message locations
+    const message = 
+      error.response?.data?.message || 
+      error.response?.data?.error?.message ||
+      error.response?.statusText ||
+      error.message ||
+      'An error occurred';
+    
     throw new Error(message);
   }
 
@@ -225,8 +240,13 @@ class AuthService {
           ...response.data.user,
           firstName: response.data.user.firstName || '',
           lastName: response.data.user.lastName || '',
-          documentId: response.data.user.documentId.toString(),
-          avatar: ''
+          documentId: response.data.user.documentId?.toString() || response.data.user.id?.toString() || '',
+          avatar: response.data.user.avatar || '',
+          // Handle role transformation
+          role: response.data.user.role ? {
+            documentId: response.data.user.role.id?.toString() || '',
+            name: response.data.user.role.name || ''
+          } : undefined
         };
       }
 

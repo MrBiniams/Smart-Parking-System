@@ -194,16 +194,24 @@ export default {
 
   async findAttendantBookings(ctx) {
     try {
-      const attendantId = ctx.state.user.documentId;
+      const attendantId = ctx.state.user?.id; // Use numeric ID instead of documentId
+      const attendantDocumentId = ctx.state.user?.documentId;
 
       if (!attendantId) {
         return ctx.unauthorized('Unauthorized');
       }
 
-      // Get attendant details with their assigned location
-      const attendant = await strapi.entityService.findOne('plugin::users-permissions.user', attendantId, {
+      // Get attendant details with their assigned location - try numeric ID first
+      let attendant = await strapi.entityService.findOne('plugin::users-permissions.user', attendantId, {
         populate: ['role', 'location'],
       });
+      
+      // If not found with numeric ID, try with documentId
+      if (!attendant && attendantDocumentId) {
+        attendant = await strapi.entityService.findOne('plugin::users-permissions.user', attendantDocumentId, {
+          populate: ['role', 'location'],
+        });
+      }
 
       if (!attendant) {
         return ctx.unauthorized('Attendant not found');
@@ -257,16 +265,24 @@ export default {
 
   async getOverstayedVehicles(ctx) {
     try {
-      const attendantId = ctx.state.user.documentId;
+      const attendantId = ctx.state.user?.id; // Use numeric ID like the other endpoint
+      const attendantDocumentId = ctx.state.user?.documentId;
 
       if (!attendantId) {
         return ctx.unauthorized('Unauthorized');
       }
 
-      // Get attendant details with their assigned location
-      const attendant = await strapi.entityService.findOne('plugin::users-permissions.user', attendantId, {
+      // Get attendant details with their assigned location - try numeric ID first
+      let attendant = await strapi.entityService.findOne('plugin::users-permissions.user', attendantId, {
         populate: ['role', 'location'],
       });
+      
+      // If not found with numeric ID, try with documentId
+      if (!attendant && attendantDocumentId) {
+        attendant = await strapi.entityService.findOne('plugin::users-permissions.user', attendantDocumentId, {
+          populate: ['role', 'location'],
+        });
+      }
 
       if (!attendant || attendant.role.name !== 'Attendant' || !attendant.location) {
         return ctx.forbidden('Only attendants with assigned locations can access this endpoint');

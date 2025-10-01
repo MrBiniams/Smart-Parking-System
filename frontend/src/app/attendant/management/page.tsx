@@ -1,8 +1,10 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { AttendantLocation } from '../../../types/attendant';
 import { attendantService } from '../../../services/attendantService';
+import { useUserStore } from '../../../store/userStore';
 import AttendantHeader from '../../../components/attendant/AttendantHeader';
 import LoadingSpinner from '../../../components/ui/LoadingSpinner';
 import ErrorMessage from '../../../components/ui/ErrorMessage';
@@ -180,11 +182,41 @@ function OverstayManagementTab({ assignedLocation, refreshTrigger }: { assignedL
 }
 
 export default function AttendantManagementPage() {
+  const router = useRouter();
+  const { user, token } = useUserStore();
   const [assignedLocation, setAssignedLocation] = useState<AttendantLocation | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<'sessions' | 'validate' | 'overstay'>('sessions');
   const [refreshTrigger, setRefreshTrigger] = useState(0);
+
+  // Check authentication
+  useEffect(() => {
+    console.log('=== ATTENDANT MANAGEMENT AUTH CHECK ===');
+    console.log('User:', user);
+    console.log('Token:', token);
+    console.log('User role:', user?.role?.name);
+    console.log('Is attendant?', user?.role?.name === 'Attendant');
+    console.log('======================================');
+
+    if (!user || !token) {
+      console.log('No user or token - redirecting to homepage');
+      router.push('/');
+      return;
+    }
+
+    if (user.role?.name !== 'Attendant') {
+      console.log('User is not an attendant - redirecting to homepage');
+      router.push('/');
+      return;
+    }
+
+    // Only fetch data if user is authenticated attendant
+    // Add small delay to ensure token is properly stored
+    setTimeout(() => {
+      fetchLocationData();
+    }, 100);
+  }, [user, token, router]);
 
   // Fetch initial data
   const fetchLocationData = async () => {
@@ -209,10 +241,7 @@ export default function AttendantManagementPage() {
     fetchLocationData();
   };
 
-  // Initial load
-  useEffect(() => {
-    fetchLocationData();
-  }, []);
+  // Initial load is now handled by the authentication useEffect above
 
   if (loading) {
     return (

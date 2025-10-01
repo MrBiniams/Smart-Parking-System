@@ -22,7 +22,7 @@ export default function WorkWithUs() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-blue-900 to-gray-900 text-white relative overflow-hidden">
+    <div className="min-h-screen bg-gradient-to-r from-blue-600 to-blue-800 text-white relative overflow-hidden">
       {/* Background Pattern */}
       <div className="absolute inset-0 opacity-10">
         <div className="absolute inset-0" style={{
@@ -54,7 +54,7 @@ export default function WorkWithUs() {
             <form onSubmit={handleSubmit} className="space-y-6">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
-                  <label className="block text-sm font-medium text-blue-100 mb-2">Name *</label>
+                  <label className="block text-sm font-medium text-white mb-2">Name *</label>
                   <input
                     type="text"
                     required
@@ -65,7 +65,7 @@ export default function WorkWithUs() {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-blue-100 mb-2">Email *</label>
+                  <label className="block text-sm font-medium text-white mb-2">Email *</label>
                   <input
                     type="email"
                     required
@@ -79,7 +79,7 @@ export default function WorkWithUs() {
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
-                  <label className="block text-sm font-medium text-blue-100 mb-2">Phone</label>
+                  <label className="block text-sm font-medium text-white mb-2">Phone</label>
                   <input
                     type="tel"
                     value={formData.phone}
@@ -89,7 +89,7 @@ export default function WorkWithUs() {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-blue-100 mb-2">Company</label>
+                  <label className="block text-sm font-medium text-white mb-2">Company</label>
                   <input
                     type="text"
                     value={formData.company}
@@ -101,7 +101,7 @@ export default function WorkWithUs() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-blue-100 mb-2">Partnership Type</label>
+                <label className="block text-sm font-medium text-white mb-2">Partnership Type</label>
                 <select
                   value={formData.type}
                   onChange={(e) => setFormData({...formData, type: e.target.value})}
@@ -115,7 +115,7 @@ export default function WorkWithUs() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-blue-100 mb-2">Message *</label>
+                <label className="block text-sm font-medium text-white mb-2">Message *</label>
                 <textarea
                   required
                   rows={5}
@@ -128,7 +128,7 @@ export default function WorkWithUs() {
 
               <button
                 type="submit"
-                className="w-full bg-gradient-to-r from-blue-500 to-blue-600 text-white font-bold py-4 px-8 rounded-lg hover:from-blue-600 hover:to-blue-700 transition-all duration-300 transform hover:scale-105 shadow-lg"
+                className="w-full bg-white text-blue-600 font-bold py-3 px-6 rounded-lg hover:bg-blue-50 transition-all duration-300 transform hover:scale-[1.02] shadow-lg"
               >
                 Send Partnership Request
               </button>

@@ -5,8 +5,9 @@ import { Dialog } from '@headlessui/react';
 import PhoneInput from 'react-phone-number-input';
 import 'react-phone-number-input/style.css';
 import { E164Number } from 'libphonenumber-js';
+import { useRouter } from 'next/navigation';
 import authService from '@/services/auth.service';
-import { useUserStore } from '@/store/userStore';
+import { useUserStore, User } from '@/store/userStore';
 
 interface AuthModalProps {
   isOpen: boolean;
@@ -34,7 +35,8 @@ const AuthModal = ({ isOpen, onClose }: AuthModalProps) => {
   const [isLoading, setIsLoading] = useState(false);
   const [isAttendant, setIsAttendant] = useState(false);
 
-  const { setUser, setToken } = useUserStore();
+  const { setUser, setToken, setActiveSession } = useUserStore();
+  const router = useRouter();
 
   const handlePhoneSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -69,13 +71,46 @@ const AuthModal = ({ isOpen, onClose }: AuthModalProps) => {
         attendantData.password
       );
 
+      console.log('=== ATTENDANT LOGIN RESPONSE ===');
+      console.log('Full response:', response);
+      console.log('User from response:', response.user);
+      console.log('Role from response:', response.user?.role);
+      console.log('Role name:', response.user?.role?.name);
+      console.log('================================');
+
       if (response.user) {
         setToken(response.jwt);
-        setUser(response.user);
+        const transformedUser: User = {
+          id: response.user.id,
+          firstName: response.user.firstName || '',
+          lastName: response.user.lastName || '',
+          phoneNumber: response.user.phoneNumber,
+          documentId: response.user.documentId || '',
+          username: (response.user as any).username || '',
+          email: response.user.email || '',
+          gender: 'male',
+          isPhoneVerified: response.user.isPhoneVerified || true,
+          avatar: (response.user as any).avatar || '',
+          role: response.user.role ? {
+            documentId: response.user.role.documentId || '',
+            name: response.user.role.name || ''
+          } : undefined
+        };
+        setUser(transformedUser);
+        setActiveSession(true); // Mark as active login session
         onClose();
+        // Redirect to attendant management page
+        router.push('/attendant/management');
       }
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Invalid credentials');
+      // Handle specific error messages from backend
+      if (err instanceof Error) {
+        setError(err.message);
+      } else if (typeof err === 'string') {
+        setError(err);
+      } else {
+        setError('Login failed. Please check your credentials and try again.');
+      }
     } finally {
       setIsLoading(false);
     }
@@ -101,8 +136,27 @@ const AuthModal = ({ isOpen, onClose }: AuthModalProps) => {
         
         if (response.user) {
           setToken(response.jwt);
-          setUser(response.user);
+          const transformedUser: User = {
+            id: response.user.id,
+            firstName: response.user.firstName || '',
+            lastName: response.user.lastName || '',
+            phoneNumber: response.user.phoneNumber,
+            documentId: response.user.documentId || '',
+            username: (response.user as any).username || '',
+            email: response.user.email || '',
+            gender: 'male',
+            isPhoneVerified: response.user.isPhoneVerified || true,
+            avatar: (response.user as any).avatar || '',
+            role: response.user.role ? {
+              documentId: response.user.role.documentId || '',
+              name: response.user.role.name || ''
+            } : undefined
+          };
+          setUser(transformedUser);
+          setActiveSession(true); // Mark as active login session
           onClose();
+          // Redirect to attendant management page
+          router.push('/attendant/management');
         } else {
           setError('Invalid attendant credentials');
         }
@@ -121,7 +175,25 @@ const AuthModal = ({ isOpen, onClose }: AuthModalProps) => {
 
         // Update user store and close modal
         setToken(response.jwt);
-        setUser(response.user);
+        // Transform user data to match User interface
+        const transformedUser: User = {
+          id: response.user.id,
+          firstName: response.user.firstName || '',
+          lastName: response.user.lastName || '',
+          phoneNumber: response.user.phoneNumber,
+          documentId: response.user.documentId || response.user.id?.toString() || '',
+          username: (response.user as any).username || '',
+          email: response.user.email || '',
+          gender: 'male',
+          isPhoneVerified: true,
+          avatar: (response.user as any).avatar || '',
+          role: response.user.role ? {
+            documentId: response.user.role.id?.toString() || '',
+            name: response.user.role.name || ''
+          } : undefined
+        };
+        setUser(transformedUser);
+        setActiveSession(true); // Mark as active login session
         onClose();
       }
     } catch (err) {
@@ -152,7 +224,24 @@ const AuthModal = ({ isOpen, onClose }: AuthModalProps) => {
       // Update user store and close modal
       if (response.user) {
         setToken(response.jwt);
-        setUser(response.user);
+        const transformedUser: User = {
+          id: response.user.id,
+          firstName: response.user.firstName || '',
+          lastName: response.user.lastName || '',
+          phoneNumber: response.user.phoneNumber,
+          documentId: response.user.documentId || response.user.id?.toString() || '',
+          username: (response.user as any).username || '',
+          email: response.user.email || '',
+          gender: 'male',
+          isPhoneVerified: true,
+          avatar: (response.user as any).avatar || '',
+          role: response.user.role ? {
+            documentId: response.user.role.id?.toString() || '',
+            name: response.user.role.name || ''
+          } : undefined
+        };
+        setUser(transformedUser);
+        setActiveSession(true); // Mark as active login session
         onClose();
       }
     } catch (err) {
