@@ -112,7 +112,7 @@ export default {
     },
     {
       method: 'GET',
-      path: '/bookings/attendant/:locationId',
+      path: '/bookings/attendant/my-location',
       handler: 'booking.findAttendantBookings',
       config: {
         policies: ['api::global.is-authenticated'],
@@ -122,6 +122,38 @@ export default {
       method: 'POST',
       path: '/bookings/attendant',
       handler: 'booking.createAttendantBooking',
+      config: {
+        policies: ['api::global.is-authenticated'],
+      },
+    },
+    {
+      method: 'GET',
+      path: '/bookings/attendant/overstayed',
+      handler: 'booking.getOverstayedVehicles',
+      config: {
+        policies: ['api::global.is-authenticated'],
+      },
+    },
+    {
+      method: 'POST',
+      path: '/bookings/attendant/overstay-payment',
+      handler: 'booking.processOverstayPayment',
+      config: {
+        policies: ['api::global.is-authenticated'],
+      },
+    },
+    {
+      method: 'POST',
+      path: '/bookings/attendant/validate-vehicle',
+      handler: 'booking.validateVehicle',
+      config: {
+        policies: ['api::global.is-authenticated'],
+      },
+    },
+    {
+      method: 'PUT',
+      path: '/bookings/attendant/end-session/:bookingId',
+      handler: 'booking.endParkingSession',
       config: {
         policies: ['api::global.is-authenticated'],
       },

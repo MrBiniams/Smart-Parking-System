@@ -42,7 +42,10 @@
       "type": "enumeration",
       "enum": [
         "telebirr",
-        "cbe-birr"
+        "cbe-birr",
+        "cash",
+        "pos",
+        "manual"
       ],
       "required": true
     },
@@ -78,6 +81,22 @@
       "type": "relation",
       "relation": "manyToOne",
       "target": "api::booking.booking"
+    },
+    "attendant": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "plugin::users-permissions.user"
+    },
+    "isOverstayPayment": {
+      "type": "boolean",
+      "default": false
+    },
+    "overstayDuration": {
+      "type": "integer",
+      "min": 0
+    },
+    "receiptNumber": {
+      "type": "string"
     }
   }
 } 
