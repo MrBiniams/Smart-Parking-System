@@ -143,7 +143,9 @@ export default {
       path: '/bookings/attendant/overstay-payment',
       handler: 'booking.processOverstayPayment',
       config: {
-        policies: ['api::global.is-authenticated'],
+        auth: {
+          strategy: 'jwt',
+        },
       },
     },
     {
@@ -151,7 +153,9 @@ export default {
       path: '/bookings/attendant/validate-vehicle',
       handler: 'booking.validateVehicle',
       config: {
-        policies: ['api::global.is-authenticated'],
+        auth: {
+          strategy: 'jwt',
+        },
       },
     },
     {
@@ -159,7 +163,17 @@ export default {
       path: '/bookings/attendant/end-session/:bookingId',
       handler: 'booking.endParkingSession',
       config: {
-        policies: ['api::global.is-authenticated'],
+        auth: {
+          strategy: 'jwt',
+        },
+      },
+    },
+    {
+      method: 'GET',
+      path: '/bookings/debug/users',
+      handler: 'booking.debugUsers',
+      config: {
+        auth: false,
       },
     },
   ],

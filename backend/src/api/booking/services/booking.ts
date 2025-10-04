@@ -298,11 +298,34 @@ export default ({ strapi }) => ({
       }
 
       // Check if attendant has access to this location
-      const attendant = await strapi.entityService.findOne('plugin::users-permissions.user', attendantId, {
+      // First try to find by documentId, then by numeric ID
+      let attendant = await strapi.entityService.findMany('plugin::users-permissions.user', {
+        filters: { documentId: attendantId },
         populate: ['role'],
       });
 
-      if (attendant.role.name !== 'Attendant') {
+      if (!attendant || attendant.length === 0) {
+        // Try by numeric ID as fallback
+        try {
+          attendant = await strapi.entityService.findOne('plugin::users-permissions.user', attendantId, {
+            populate: ['role'],
+          });
+          attendant = attendant ? [attendant] : [];
+        } catch (err) {
+          attendant = [];
+        }
+      }
+
+      const attendantUser = attendant[0] || null;
+
+      if (!attendantUser) {
+        return {
+          error: 'Attendant not found',
+          status: 404
+        };
+      }
+
+      if (!attendantUser.role || attendantUser.role.name !== 'Attendant') {
         return {
           error: 'Only attendants can create bookings for others',
           status: 403
@@ -384,20 +407,37 @@ export default ({ strapi }) => ({
       }
 
       // Create booking
+      const bookingData = {
+        plateNumber,
+        slot: slotId,
+        startTime,
+        endTime,
+        duration: parseInt(time),
+        totalPrice,
+        bookingStatus: 'active', // Set to active immediately for attendant bookings
+        paymentStatus: 'paid', // Assume payment is handled by attendant
+        user: user.id,
+        attendantUser: attendantId
+      };
+
+      console.log('=== SERVICE: Creating booking with data ===');
+      console.log('Booking data:', bookingData);
+      console.log('Slot location:', slot.location?.name);
+      console.log('Attendant ID:', attendantId);
+      console.log('Customer user ID:', user.id);
+      console.log('=========================================');
+
       const booking = await strapi.entityService.create('api::booking.booking', {
-        data: {
-          plateNumber,
-          slot: slotId,
-          startTime,
-          endTime,
-          duration: parseInt(time),
-          totalPrice,
-          bookingStatus: 'pending',
-          paymentStatus: 'pending',
-          user: user.id,
-          attendantUser: attendantId
-        }
+        data: bookingData
       });
+
+      console.log('=== ATTENDANT BOOKING CREATED ===');
+      console.log('Booking ID:', booking.documentId);
+      console.log('Plate Number:', booking.plateNumber);
+      console.log('Status:', booking.bookingStatus);
+      console.log('User ID:', booking.user);
+      console.log('Attendant ID:', booking.attendantUser);
+      console.log('================================');
 
       return {
         success: true,
@@ -405,7 +445,10 @@ export default ({ strapi }) => ({
       };
     } catch (error) {
       console.error('Error creating attendant booking:', error);
-      return ctx.status(500).json({ message: 'Error creating booking' });
+      return {
+        error: 'Failed to create booking',
+        status: 500
+      };
     }
   }
 }); 

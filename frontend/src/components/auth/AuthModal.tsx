@@ -291,32 +291,111 @@ const AuthModal = ({ isOpen, onClose }: AuthModalProps) => {
           {step === 'phone' ? (
             <form onSubmit={handlePhoneSubmit}>
               <div className="mb-4">
-              <label className="block text-sm font-medium text-black mb-1 text-center font-semibold">
+                <label className="block text-sm font-medium text-black mb-1 text-center font-semibold">
                   Phone Number
-              </label>
+                </label>
                 <PhoneInput
                   international
+                  countryCallingCodeEditable={false}
                   defaultCountry="ET"
                   value={phoneNumber}
                   onChange={setPhoneNumber}
-                  className="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white text-gray-900"
                   placeholder="Enter phone number"
-                  inputComponent={({ className, ...props }) => (
-                    <input
-                      {...props}
-                      className={`${className} text-gray-900 placeholder-gray-500`}
-                      style={{
-                        color: '#1F2937',
-                        backgroundColor: 'white',
-                        border: '1px solid #D1D5DB',
-                        borderRadius: '6px',
-                        padding: '8px',
-                        width: '100%',
-                        fontSize: '16px'
-                      }}
-                    />
-                  )}
+                  className="phone-input-wrapper"
                 />
+                <style jsx global>{`
+                  .phone-input-wrapper {
+                    display: flex;
+                    width: 100%;
+                  }
+                  
+                  .phone-input-wrapper .PhoneInputCountrySelect {
+                    background: white;
+                    border: 1px solid #d1d5db;
+                    border-radius: 6px 0 0 6px;
+                    border-right: none;
+                    padding: 8px;
+                    cursor: pointer;
+                    display: flex;
+                    align-items: center;
+                    min-width: 60px;
+                  }
+                  
+                  .phone-input-wrapper .PhoneInputCountrySelect:hover {
+                    background: #f9fafb;
+                  }
+                  
+                  .phone-input-wrapper .PhoneInputCountrySelectArrow {
+                    color: #6b7280;
+                    margin-left: 4px;
+                  }
+                  
+                  .phone-input-wrapper .PhoneInputInput {
+                    flex: 1;
+                    border: 1px solid #d1d5db;
+                    border-radius: 0 6px 6px 0;
+                    border-left: none;
+                    padding: 8px 12px;
+                    font-size: 16px;
+                    background: white;
+                    color: #1f2937;
+                  }
+                  
+                  .phone-input-wrapper .PhoneInputInput:focus {
+                    outline: none;
+                    border-color: #3b82f6;
+                    box-shadow: 0 0 0 1px #3b82f6;
+                  }
+                  
+                  .phone-input-wrapper .PhoneInputCountrySelect:focus {
+                    outline: none;
+                    border-color: #3b82f6;
+                    box-shadow: 0 0 0 1px #3b82f6;
+                  }
+                  
+                  .PhoneInputCountrySelectDropdown {
+                    background: white !important;
+                    border: 1px solid #d1d5db !important;
+                    border-radius: 6px !important;
+                    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05) !important;
+                    max-height: 200px !important;
+                    overflow-y: auto !important;
+                    z-index: 1000 !important;
+                  }
+                  
+                  .PhoneInputCountrySelectDropdown .PhoneInputCountrySelectOption {
+                    padding: 8px 12px !important;
+                    cursor: pointer !important;
+                    display: flex !important;
+                    align-items: center !important;
+                    color: #1f2937 !important;
+                    background: white !important;
+                  }
+                  
+                  .PhoneInputCountrySelectDropdown .PhoneInputCountrySelectOption:hover {
+                    background: #f3f4f6 !important;
+                  }
+                  
+                  .PhoneInputCountrySelectDropdown .PhoneInputCountrySelectOption--selected {
+                    background: #dbeafe !important;
+                    color: #1e40af !important;
+                  }
+                  
+                  .PhoneInputCountrySelectDropdown .PhoneInputCountrySelectOption .PhoneInputCountrySelectOptionIcon {
+                    margin-right: 8px !important;
+                    width: 20px !important;
+                    height: 15px !important;
+                  }
+                  
+                  .PhoneInputCountrySelectDropdown .PhoneInputCountrySelectOption .PhoneInputCountrySelectOptionCountryName {
+                    margin-right: 8px !important;
+                  }
+                  
+                  .PhoneInputCountrySelectDropdown .PhoneInputCountrySelectOption .PhoneInputCountrySelectOptionCountryCallingCode {
+                    color: #6b7280 !important;
+                    font-weight: 500 !important;
+                  }
+                `}</style>
               </div>
 
               <button

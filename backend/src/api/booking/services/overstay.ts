@@ -113,6 +113,17 @@ export default () => ({
         if (!booking || !booking.documentId) {
           continue;
         }
+        
+        // Log the booking user data for debugging
+        console.log('=== OVERSTAY BOOKING DEBUG ===');
+        console.log('Booking ID:', booking.documentId);
+        console.log('Plate Number:', booking.plateNumber);
+        console.log('Booking User ID:', booking.user?.id);
+        console.log('Booking User Name:', booking.user?.firstName, booking.user?.lastName);
+        console.log('Booking User Phone:', booking.user?.phoneNumber);
+        console.log('Full User Object:', JSON.stringify(booking.user, null, 2));
+        console.log('==============================');
+        
         const overstayDetails = await this.calculateOverstay(booking.documentId);
         if (overstayDetails.isOverstayed) {
           overstayedVehicles.push({
@@ -124,8 +135,11 @@ export default () => ({
               startTime: booking.startTime,
               endTime: booking.endTime,
               totalPrice: booking.totalPrice,
-              user: booking.user,
-              slot: booking.slot
+              user: booking.user, // This should be the actual customer
+              slot: {
+                ...booking.slot,
+                slotNumber: booking.slot?.name || booking.slot?.number || 'Unknown'
+              }
             }
           });
         }

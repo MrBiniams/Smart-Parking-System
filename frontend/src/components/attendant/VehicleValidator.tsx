@@ -30,6 +30,8 @@ export default function VehicleValidator({
   const handleValidateVehicle = async (e: React.FormEvent) => {
     e.preventDefault();
     
+    alert('Function called! Plate: ' + plateNumber);
+    
     if (!plateNumber.trim()) {
       setError('Please enter a license plate number');
       return;
@@ -40,7 +42,11 @@ export default function VehicleValidator({
       setError(null);
       setValidationResult(null);
 
-      const result = await attendantService.validateVehicle(plateNumber.toUpperCase());
+      const result = await attendantService.validateVehicle(plateNumber.trim());
+      
+      // Debug alert to see what we're getting
+      alert(`Debug: valid=${result.valid}, isOverstayed=${result.isOverstayed}, message=${result.message}`);
+      
       setValidationResult(result);
     } catch (err: any) {
       setError(err.message || 'Failed to validate vehicle');
@@ -136,9 +142,9 @@ export default function VehicleValidator({
                 type="text"
                 id="plateNumber"
                 value={plateNumber}
-                onChange={(e) => setPlateNumber(e.target.value.toUpperCase())}
+                onChange={(e) => setPlateNumber(e.target.value)}
                 placeholder="ABC-1234"
-                className="flex-1 px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-lg font-mono"
+                className="flex-1 px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-lg font-mono text-gray-900 bg-white"
                 disabled={validating}
               />
               <button

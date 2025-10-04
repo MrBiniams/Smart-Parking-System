@@ -85,10 +85,9 @@ export default function ParkingSessionManager({
       await attendantService.createAttendantBooking({
         slotId: newBooking.slotId,
         plateNumber: newBooking.plateNumber.toUpperCase(),
-        startTime: startTime.toISOString(),
-        endTime: endTime.toISOString(),
-        customerPhone: newBooking.customerPhone,
-        customerName: newBooking.customerName
+        time: newBooking.duration.toString(), // Backend expects 'time' not startTime/endTime
+        phoneNumber: newBooking.customerPhone || '+251900000000', // Backend expects 'phoneNumber' not customerPhone
+        customerName: newBooking.customerName || 'Walk-in Customer'
       });
 
       // Reset form and refresh data
@@ -239,20 +238,20 @@ export default function ParkingSessionManager({
                   <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                   </svg>
-                  {booking.user.firstName} {booking.user.lastName}
+                  {booking.user?.firstName || 'Unknown'} {booking.user?.lastName || 'Customer'}
                 </div>
                 <div className="flex items-center text-sm text-gray-600">
                   <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
                   </svg>
-                  {booking.user.phoneNumber}
+                  {booking.user?.phoneNumber || 'No phone number'}
                 </div>
                 <div className="flex items-center text-sm text-gray-600">
                   <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
                   </svg>
-                  Slot {booking.slot.slotNumber}
+                  Slot {booking.slot?.slotNumber || booking.slot?.name || 'Unknown'}
                 </div>
               </div>
 
@@ -336,7 +335,7 @@ export default function ParkingSessionManager({
                     required
                     value={newBooking.plateNumber}
                     onChange={(e) => setNewBooking(prev => ({ ...prev, plateNumber: e.target.value }))}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white text-black placeholder-gray-600 font-medium"
                     placeholder="ABC-1234"
                   />
                 </div>
@@ -350,7 +349,7 @@ export default function ParkingSessionManager({
                     required
                     value={newBooking.customerName}
                     onChange={(e) => setNewBooking(prev => ({ ...prev, customerName: e.target.value }))}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white text-black placeholder-gray-600 font-medium"
                     placeholder="John Doe"
                   />
                 </div>
@@ -364,7 +363,7 @@ export default function ParkingSessionManager({
                     required
                     value={newBooking.customerPhone}
                     onChange={(e) => setNewBooking(prev => ({ ...prev, customerPhone: e.target.value }))}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white text-black placeholder-gray-600 font-medium"
                     placeholder="+251912345678"
                   />
                 </div>
@@ -377,7 +376,7 @@ export default function ParkingSessionManager({
                     required
                     value={newBooking.slotId}
                     onChange={(e) => setNewBooking(prev => ({ ...prev, slotId: e.target.value }))}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white text-black placeholder-gray-600 font-medium"
                   >
                     <option value="">Select a slot</option>
                     {availableSlots.map((slot) => (
@@ -396,7 +395,7 @@ export default function ParkingSessionManager({
                     required
                     value={newBooking.duration}
                     onChange={(e) => setNewBooking(prev => ({ ...prev, duration: parseInt(e.target.value) }))}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white text-black placeholder-gray-600 font-medium"
                   >
                     <option value={1}>1 hour</option>
                     <option value={2}>2 hours</option>
@@ -417,7 +416,7 @@ export default function ParkingSessionManager({
                     value={newBooking.notes}
                     onChange={(e) => setNewBooking(prev => ({ ...prev, notes: e.target.value }))}
                     rows={3}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white text-black placeholder-gray-600 font-medium"
                     placeholder="Additional notes..."
                   />
                 </div>

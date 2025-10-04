@@ -135,14 +135,14 @@ export default function ActiveBookings({ userId }: ActiveBookingsProps) {
                     <div className="flex items-start justify-between gap-2">
                       <div className="min-w-0">
                         <h4 className="font-medium text-gray-900 text-sm truncate">
-                          {booking.slot.location?.name || booking.location.address}
+                          {booking.location?.name || booking.location?.address || 'Location not available'}
                         </h4>
                         <div className="flex items-center gap-1.5 text-xs text-gray-600 mt-0.5">
                           <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
                           </svg>
-                          <span className="truncate">Slot {booking.slot.name}</span>
+                          <span className="truncate">Slot {booking.slot?.name || 'Slot not available'}</span>
                         </div>
                       </div>
                       <span className={`inline-flex items-center px-1.5 py-0.5 rounded-full text-xs font-medium flex-shrink-0 ${

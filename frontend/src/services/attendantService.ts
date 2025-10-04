@@ -98,9 +98,8 @@ class AttendantService {
   async createAttendantBooking(bookingData: {
     slotId: string;
     plateNumber: string;
-    startTime: string;
-    endTime?: string;
-    customerPhone?: string;
+    time: string;
+    phoneNumber: string;
     customerName?: string;
   }): Promise<AttendantBooking> {
     try {
@@ -226,6 +225,34 @@ class AttendantService {
       throw new Error(
         error.response?.data?.message || 
         'Failed to end parking session'
+      );
+    }
+  }
+
+  /**
+   * Get available slots for attendant's location
+   */
+  async getAvailableSlots(locationId: string): Promise<{
+    data: any[];
+  }> {
+    try {
+      const response = await axios.get(
+        `${API_BASE_URL}/api/slots/location/${locationId}`,
+        {
+          headers: this.getAuthHeaders(),
+        }
+      );
+
+      // Filter only available slots
+      const availableSlots = response.data.data.filter((slot: any) => 
+        slot.slotStatus === 'available'
+      );
+
+      return { data: availableSlots };
+    } catch (error: any) {
+      throw new Error(
+        error.response?.data?.message || 
+        'Failed to fetch available slots'
       );
     }
   }

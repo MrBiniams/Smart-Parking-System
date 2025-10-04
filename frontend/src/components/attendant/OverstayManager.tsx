@@ -54,12 +54,84 @@ export default function OverstayManager({
       setError(null);
 
       const response = await attendantService.getOverstayedVehicles();
+      
+      // Debug log to check the received data
+      console.log('Overstayed vehicles response:', response);
+      console.log('First vehicle user data:', response.data[0]?.booking?.user);
+      
       setOverstayedVehicles(response.data);
     } catch (err: any) {
       setError(err.message || 'Failed to fetch overstayed vehicles');
       console.error('Error fetching overstayed vehicles:', err);
     } finally {
       setLoading(false);
+    }
+  };
+
+  // Contact customer function
+  const handleContactCustomer = (vehicle: OverstayedVehicle) => {
+    const customerName = `${vehicle.booking.user?.firstName || 'Customer'} ${vehicle.booking.user?.lastName || ''}`.trim();
+    const phoneNumber = vehicle.booking.user?.phoneNumber;
+    const email = vehicle.booking.user?.email;
+    const plateNumber = vehicle.booking.plateNumber;
+    const overstayDuration = formatDuration(vehicle.overstayMinutes);
+    const additionalCost = vehicle.additionalCost.toFixed(2);
+
+    // Debug log to check user data
+    console.log('Contact customer - vehicle data:', {
+      customerName,
+      phoneNumber,
+      email,
+      plateNumber,
+      fullUser: vehicle.booking.user
+    });
+
+    // Create detailed instructions for the attendant
+    const instructions = `🚗 OVERSTAY ALERT - ACTION REQUIRED\n\n` +
+      `Vehicle: ${plateNumber}\n` +
+      `Customer: ${customerName}\n` +
+      `Overstayed: ${overstayDuration}\n` +
+      `Additional Cost: $${additionalCost}\n\n` +
+      
+      `📋 ATTENDANT INSTRUCTIONS:\n\n` +
+      
+      `1️⃣ CONTACT CUSTOMER:\n` +
+      `   📞 Phone: ${phoneNumber || 'NOT AVAILABLE'}\n` +
+      `   ✉️ Email: ${email || 'NOT AVAILABLE'}\n\n` +
+      
+      `2️⃣ WHAT TO SAY:\n` +
+      `   "Hello ${customerName}, this is Smart Parking.\n` +
+      `   Your vehicle ${plateNumber} has overstayed by ${overstayDuration}.\n` +
+      `   Please return to settle the additional payment of $${additionalCost}."\n\n` +
+      
+      `3️⃣ IF CUSTOMER DOESN'T ANSWER:\n` +
+      `   • Try calling 2-3 times with 5-minute intervals\n` +
+      `   • Send SMS if available\n` +
+      `   • Document attempts in system notes\n\n` +
+      
+      `4️⃣ IF CUSTOMER RETURNS:\n` +
+      `   • Process payment using the "Process Payment" button\n` +
+      `   • Select appropriate payment method\n` +
+      `   • Provide receipt\n\n` +
+      
+      `5️⃣ IF NO RESPONSE AFTER 30 MINUTES:\n` +
+      `   • Contact supervisor\n` +
+      `   • Consider towing procedures\n` +
+      `   • Document all actions taken\n\n` +
+      
+      `Click OK to copy customer phone number to clipboard.`;
+
+    if (confirm(instructions)) {
+      if (phoneNumber) {
+        // Copy phone number to clipboard
+        navigator.clipboard.writeText(phoneNumber).then(() => {
+          alert(`✅ Phone number copied!\n\n${phoneNumber}\n\nYou can now call the customer.`);
+        }).catch(() => {
+          alert(`📞 Customer Phone: ${phoneNumber}\n\nPlease call this number manually.`);
+        });
+      } else {
+        alert(`❌ No phone number available for ${customerName}.\n\nContact your supervisor for alternative contact methods.`);
+      }
     }
   };
 
@@ -70,7 +142,11 @@ export default function OverstayManager({
       return;
     }
 
-    if (!confirm('Are you sure you want to process this overstay payment?')) {
+    const vehicle = overstayedVehicles.find(v => v.booking.documentId === bookingId);
+    const customerName = vehicle ? `${vehicle.booking.user?.firstName || ''} ${vehicle.booking.user?.lastName || ''}`.trim() : 'Customer';
+    const amount = vehicle?.additionalCost.toFixed(2) || '0.00';
+
+    if (!confirm(`Process ${paymentMethod.toUpperCase()} payment of $${amount} for ${customerName}?\n\nThis action cannot be undone.`)) {
       return;
     }
 
@@ -78,13 +154,21 @@ export default function OverstayManager({
       setProcessingPayment(bookingId);
       setError(null);
 
+      console.log('Processing payment:', { bookingId, paymentMethod });
+
       const result = await attendantService.processOverstayPayment(bookingId, paymentMethod as any);
       
+      console.log('Payment result:', result);
+      
       // Show success message with receipt number
-      alert(`Payment processed successfully!\nReceipt Number: ${result.receiptNumber}`);
+      alert(`✅ Payment processed successfully!\n\n` +
+            `Receipt Number: ${result.receiptNumber}\n` +
+            `Amount: $${amount}\n` +
+            `Method: ${paymentMethod.toUpperCase()}\n` +
+            `Customer: ${customerName}`);
       
       // Refresh the list
-      fetchOverstayedVehicles();
+      await fetchOverstayedVehicles();
       
       // Clear selected payment method
       setSelectedPaymentMethod(prev => {
@@ -93,7 +177,10 @@ export default function OverstayManager({
         return updated;
       });
     } catch (err: any) {
-      setError(err.message || 'Failed to process payment');
+      console.error('Payment processing error:', err);
+      const errorMessage = err.message || 'Failed to process payment';
+      setError(`Payment failed: ${errorMessage}`);
+      alert(`❌ Payment Failed\n\n${errorMessage}\n\nPlease try again or contact support.`);
     } finally {
       setProcessingPayment(null);
     }
@@ -239,13 +326,31 @@ export default function OverstayManager({
                 {/* Customer Info */}
                 <div className="space-y-3">
                   <div>
-                    <p className="text-xs text-gray-500 uppercase tracking-wide">Customer</p>
-                    <p className="text-sm font-medium text-gray-900">
-                      {vehicle.booking.user.firstName} {vehicle.booking.user.lastName}
-                    </p>
-                    <p className="text-sm text-gray-600">
-                      {vehicle.booking.user.phoneNumber}
-                    </p>
+                    <p className="text-xs text-gray-500 uppercase tracking-wide">Customer Information</p>
+                    {vehicle.booking.user ? (
+                      <>
+                        <p className="text-sm font-medium text-gray-900">
+                          {vehicle.booking.user.firstName || 'Unknown'} {vehicle.booking.user.lastName || 'Customer'}
+                        </p>
+                        <p className="text-sm text-gray-600">
+                          📞 {vehicle.booking.user.phoneNumber || 'No phone number'}
+                        </p>
+                        {vehicle.booking.user.email && (
+                          <p className="text-sm text-gray-600">
+                            ✉️ {vehicle.booking.user.email}
+                          </p>
+                        )}
+                      </>
+                    ) : (
+                      <>
+                        <p className="text-sm font-medium text-red-600">
+                          ⚠️ Customer data not available
+                        </p>
+                        <p className="text-xs text-gray-500">
+                          Contact system administrator
+                        </p>
+                      </>
+                    )}
                   </div>
                 </div>
 
@@ -265,8 +370,8 @@ export default function OverstayManager({
 
               {/* Overstay Details */}
               <div className="bg-white bg-opacity-50 rounded-lg p-4 mb-6">
-                <h4 className="text-sm font-medium text-gray-900 mb-3">Overstay Calculation</h4>
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+                <h4 className="text-sm font-medium text-gray-900 mb-3">💰 Overstay Calculation Details</h4>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm mb-4">
                   <div>
                     <p className="text-gray-500">Total Overstay</p>
                     <p className="font-medium text-gray-900">
@@ -275,8 +380,8 @@ export default function OverstayManager({
                   </div>
                   <div>
                     <p className="text-gray-500">Grace Period</p>
-                    <p className="font-medium text-gray-900">
-                      {vehicle.gracePeriodMinutes} min
+                    <p className="font-medium text-green-600">
+                      -{vehicle.gracePeriodMinutes} min (FREE)
                     </p>
                   </div>
                   <div>
@@ -291,6 +396,19 @@ export default function OverstayManager({
                       ${vehicle.additionalCost.toFixed(2)}
                     </p>
                   </div>
+                </div>
+                
+                {/* Calculation Formula */}
+                <div className="bg-blue-50 border border-blue-200 rounded-md p-3 text-xs">
+                  <p className="font-medium text-blue-800 mb-1">📊 How it's calculated:</p>
+                  <p className="text-blue-700">
+                    <span className="font-mono">
+                      ({formatDuration(vehicle.overstayMinutes)} - {vehicle.gracePeriodMinutes}min grace) × ${vehicle.hourlyRate}/hr = ${vehicle.additionalCost.toFixed(2)}
+                    </span>
+                  </p>
+                  <p className="text-blue-600 mt-1">
+                    ℹ️ Billing rounds up to the next hour after grace period
+                  </p>
                 </div>
               </div>
 
@@ -334,32 +452,48 @@ export default function OverstayManager({
                   ))}
                 </div>
 
-                {/* Process Payment Button */}
-                <button
-                  onClick={() => handleProcessPayment(
-                    vehicle.booking.documentId,
-                    selectedPaymentMethod[vehicle.booking.documentId]
-                  )}
-                  disabled={
-                    processingPayment === vehicle.booking.documentId || 
-                    !selectedPaymentMethod[vehicle.booking.documentId]
-                  }
-                  className="w-full px-4 py-3 text-sm font-medium text-white bg-green-600 border border-transparent rounded-lg hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  {processingPayment === vehicle.booking.documentId ? (
+                {/* Action Buttons */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                  {/* Contact Customer Button */}
+                  <button
+                    onClick={() => handleContactCustomer(vehicle)}
+                    className="px-4 py-3 text-sm font-medium text-blue-700 bg-blue-50 border border-blue-200 rounded-lg hover:bg-blue-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors"
+                  >
                     <div className="flex items-center justify-center">
-                      <svg className="animate-spin -ml-1 mr-2 h-4 w-4" fill="none" viewBox="0 0 24 24">
-                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                      <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
                       </svg>
-                      Processing Payment...
+                      Contact Customer
                     </div>
-                  ) : (
-                    `Process ${selectedPaymentMethod[vehicle.booking.documentId] ? 
-                      paymentMethods.find(m => m.value === selectedPaymentMethod[vehicle.booking.documentId])?.label : 'Payment'
-                    } - $${vehicle.additionalCost.toFixed(2)}`
-                  )}
-                </button>
+                  </button>
+
+                  {/* Process Payment Button */}
+                  <button
+                    onClick={() => handleProcessPayment(
+                      vehicle.booking.documentId,
+                      selectedPaymentMethod[vehicle.booking.documentId]
+                    )}
+                    disabled={
+                      processingPayment === vehicle.booking.documentId || 
+                      !selectedPaymentMethod[vehicle.booking.documentId]
+                    }
+                    className="px-4 py-3 text-sm font-medium text-white bg-green-600 border border-transparent rounded-lg hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                  >
+                    {processingPayment === vehicle.booking.documentId ? (
+                      <div className="flex items-center justify-center">
+                        <svg className="animate-spin -ml-1 mr-2 h-4 w-4" fill="none" viewBox="0 0 24 24">
+                          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
+                        Processing Payment...
+                      </div>
+                    ) : (
+                      `Process ${selectedPaymentMethod[vehicle.booking.documentId] ? 
+                        paymentMethods.find(m => m.value === selectedPaymentMethod[vehicle.booking.documentId])?.label : 'Payment'
+                      } - $${vehicle.additionalCost.toFixed(2)}`
+                    )}
+                  </button>
+                </div>
               </div>
             </div>
           ))}
