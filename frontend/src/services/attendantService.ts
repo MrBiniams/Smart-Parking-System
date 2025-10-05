@@ -256,6 +256,91 @@ class AttendantService {
       );
     }
   }
+
+  /**
+   * Save manual payment processed by attendant
+   */
+  async saveManualPayment(paymentData: {
+    plateNumber: string;
+    amount: number;
+    paymentMethod: 'cash' | 'pos' | 'telebirr';
+    notes?: string;
+  }) {
+    try {
+      console.log('=== FRONTEND: Saving manual payment ===');
+      console.log('Payment data:', paymentData);
+
+      const response = await axios.post(
+        `${API_BASE_URL}/api/payments/attendant/manual`,
+        paymentData,
+        {
+          headers: this.getAuthHeaders(),
+        }
+      );
+
+      console.log('=== FRONTEND: Payment saved successfully ===');
+      console.log('Response:', response.data);
+
+      return response.data;
+    } catch (error: any) {
+      console.error('=== FRONTEND: Payment save error ===');
+      console.error('Error:', error.response?.data || error.message);
+      
+      if (error.response?.status === 401) {
+        throw new Error('Unauthorized - Please log in as an attendant');
+      }
+      if (error.response?.status === 403) {
+        throw new Error('Forbidden - Only attendants can process payments');
+      }
+      if (error.response?.status === 400) {
+        throw new Error(error.response?.data?.message || 'Invalid payment data');
+      }
+      
+      throw new Error(
+        error.response?.data?.message || 
+        'Failed to save payment'
+      );
+    }
+  }
+
+  /**
+   * Get recent payments for attendant's location
+   */
+  async getRecentPayments() {
+    try {
+      console.log('=== FRONTEND: Getting recent payments ===');
+
+      const response = await axios.get(
+        `${API_BASE_URL}/api/payments/attendant/recent`,
+        {
+          headers: this.getAuthHeaders(),
+        }
+      );
+
+      console.log('=== FRONTEND: Recent payments retrieved ===');
+      console.log('Total payments:', response.data.data?.length || 0);
+
+      return response.data;
+    } catch (error: any) {
+      console.error('=== FRONTEND: Recent payments error ===');
+      console.error('Error:', error.response?.data || error.message);
+      
+      if (error.response?.status === 401) {
+        throw new Error('Unauthorized - Please log in as an attendant');
+      }
+      if (error.response?.status === 403) {
+        throw new Error('Forbidden - Only attendants can access payment history');
+      }
+      if (error.response?.status === 400) {
+        throw new Error('Attendant has no assigned location');
+      }
+      
+      throw new Error(
+        error.response?.data?.message || 
+        'Failed to fetch recent payments'
+      );
+    }
+  }
 }
 
 export const attendantService = new AttendantService();

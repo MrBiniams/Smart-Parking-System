@@ -278,29 +278,23 @@ const PaymentProcessingTab: React.FC<{ assignedLocation: AttendantLocation | nul
   const loadRecentPayments = async () => {
     setLoading(true);
     try {
-      // For now, we'll simulate recent payments. In real implementation, 
-      // you'd have an API endpoint for payment history
-      const mockPayments = [
-        {
-          id: '1',
-          plateNumber: 'ABC-123',
-          amount: 15.50,
-          method: 'cash',
-          timestamp: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
-          type: 'overstay'
-        },
-        {
-          id: '2',
-          plateNumber: 'XYZ-789',
-          amount: 8.00,
-          method: 'telebirr',
-          timestamp: new Date(Date.now() - 4 * 60 * 60 * 1000).toISOString(),
-          type: 'regular'
-        }
-      ];
-      setRecentPayments(mockPayments);
+      console.log('=== LOADING RECENT PAYMENTS ===');
+      
+      // Fetch real payments from API
+      const response = await attendantService.getRecentPayments();
+      
+      console.log('Recent payments response:', response);
+      console.log('Payments data:', response.data);
+      
+      // Set the payments data from API response
+      setRecentPayments(response.data || []);
+      
+      console.log('Recent payments loaded successfully:', response.data?.length || 0);
     } catch (err: any) {
       console.error('Error loading recent payments:', err);
+      setError(err.message);
+      // Set empty array on error to prevent showing old data
+      setRecentPayments([]);
     } finally {
       setLoading(false);
     }
@@ -346,11 +340,19 @@ const PaymentProcessingTab: React.FC<{ assignedLocation: AttendantLocation | nul
           notes || `${paymentMethod.toUpperCase()} payment for ${plateNumber}`
         );
       } else {
-        // This would be a manual payment entry - you'd need a separate API for this
-        console.log('Manual payment processing:', { plateNumber, amount, paymentMethod, notes });
+        // Manual payment entry - save to database via API
+        await attendantService.saveManualPayment({
+          plateNumber: plateNumber.trim().toUpperCase(),
+          amount: parseFloat(amount),
+          paymentMethod,
+          notes: notes || undefined
+        });
       }
 
-      setSuccess(`Payment of $${amount} processed successfully via ${paymentMethod.toUpperCase()} for ${plateNumber}`);
+      setSuccess(`Payment of ${amount} ETB processed successfully via ${paymentMethod.toUpperCase()} for ${plateNumber.toUpperCase()}`);
+      
+      // Clear any previous errors
+      setError(null);
       
       // Reset form
       setAmount('');
@@ -358,8 +360,8 @@ const PaymentProcessingTab: React.FC<{ assignedLocation: AttendantLocation | nul
       setNotes('');
       setValidationResult(null);
       
-      // Reload recent payments
-      loadRecentPayments();
+      // Reload recent payments to show the new payment
+      await loadRecentPayments();
       
     } catch (err: any) {
       setError(err.message);
@@ -432,7 +434,7 @@ const PaymentProcessingTab: React.FC<{ assignedLocation: AttendantLocation | nul
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Amount ($) *</label>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Amount (ETB) *</label>
               <input
                 type="number"
                 step="1"
@@ -484,7 +486,7 @@ const PaymentProcessingTab: React.FC<{ assignedLocation: AttendantLocation | nul
               </div>
               {validationResult.isOverstayed && validationResult.overstayDetails && (
                 <p className="text-sm text-yellow-700">
-                  Suggested amount: ${validationResult.overstayDetails.totalDue?.toFixed(2) || '0.00'}
+                  Suggested amount: {validationResult.overstayDetails.totalDue?.toFixed(0) || '0'} ETB
                 </p>
               )}
             </div>
@@ -644,8 +646,11 @@ const PaymentProcessingTab: React.FC<{ assignedLocation: AttendantLocation | nul
                       </div>
                     </div>
                     <div className="text-right">
-                      <p className="text-lg font-bold text-green-600">${payment.amount.toFixed(2)}</p>
+                      <p className="text-lg font-bold text-green-600">{payment.amount} ETB</p>
                       <p className="text-xs text-gray-500 capitalize">{payment.type}</p>
+                      {payment.attendantName && (
+                        <p className="text-xs text-blue-600">by {payment.attendantName}</p>
+                      )}
                     </div>
                   </div>
                 </div>
