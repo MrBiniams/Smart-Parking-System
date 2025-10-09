@@ -7,7 +7,7 @@ export default {
       config: {
         policies: [],
         auth: {
-          enabled: true
+          strategy: 'jwt'
         },
       },
     },
@@ -18,7 +18,7 @@ export default {
       config: {
         policies: [],
         auth: {
-          enabled: true
+          strategy: 'jwt'
         },
       },
     },
@@ -29,7 +29,7 @@ export default {
       config: {
         policies: [],
         auth: {
-          strategy: 'api-token'
+          strategy: 'jwt'
         }
       }
     },
@@ -40,7 +40,7 @@ export default {
       config: {
         policies: [],
         auth: {
-          enabled: true
+          strategy: 'jwt'
         },
       },
     },
@@ -51,7 +51,7 @@ export default {
       config: {
         policies: [],
         auth: {
-          enabled: true
+          strategy: 'jwt'
         },
       },
     },
@@ -62,7 +62,7 @@ export default {
       config: {
         policies: [],
         auth: {
-          enabled: true
+          strategy: 'jwt'
         },
       },
     },
@@ -73,7 +73,7 @@ export default {
       config: {
         policies: [],
         auth: {
-          enabled: true
+          strategy: 'jwt'
         },
       },
     },
@@ -84,7 +84,7 @@ export default {
       config: {
         policies: [],
         auth: {
-          enabled: true
+          strategy: 'jwt'
         },
       },
     },
@@ -95,7 +95,7 @@ export default {
       config: {
         policies: [],
         auth: {
-          enabled: true
+          strategy: 'jwt'
         },
       },
     },
@@ -106,7 +106,7 @@ export default {
       config: {
         policies: [],
         auth: {
-          enabled: true
+          strategy: 'jwt'
         },
       },
     },

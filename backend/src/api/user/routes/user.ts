@@ -36,8 +36,7 @@ export default {
       handler: 'user.getCurrentUser',
       config: {
         auth: {
-          strategy: 'jwt',
-          scope: ['users-permissions']
+          strategy: 'jwt'
         },
         policies: [],
         description: 'Get current user',
@@ -54,7 +53,7 @@ export default {
       handler: 'user.updateProfile',
       config: {
         auth: {
-          scope: ['users-permissions']
+          strategy: 'jwt'
         },
         policies: [],
         description: 'Update current user profile',

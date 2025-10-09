@@ -3,11 +3,17 @@
 import { useState } from "react"
 import { useUserStore } from "@/store/userStore"
 import { useRouter } from "next/navigation"
+import { ProfileCompletion } from "./ProfileCompletion"
 
 export function ProfileDrawer() {
   const [isOpen, setIsOpen] = useState(false)
+  const [showProfileModal, setShowProfileModal] = useState(false)
+  const [isEditMode, setIsEditMode] = useState(false)
   const { user, logout } = useUserStore()
   const router = useRouter()
+  
+  // Simple check - just show edit button for all users
+  const isCompleteProfile = true
 
   const handleLogout = async () => {
     await logout()
@@ -17,6 +23,27 @@ export function ProfileDrawer() {
   const toggleDrawer = (e: React.MouseEvent) => {
     e.preventDefault()
     setIsOpen(!isOpen)
+  }
+
+  const handleCompleteProfile = () => {
+    setIsEditMode(false)
+    setShowProfileModal(true)
+  }
+
+  const handleEditProfile = () => {
+    setIsEditMode(true)
+    setShowProfileModal(true)
+  }
+
+  const handleProfileModalClose = () => {
+    setShowProfileModal(false)
+    setIsEditMode(false)
+  }
+
+  const handleProfileComplete = () => {
+    setShowProfileModal(false)
+    setIsEditMode(false)
+    // Profile completion/edit success - user store is already updated by the component
   }
 
   return (
@@ -106,15 +133,38 @@ export function ProfileDrawer() {
         <div className="p-4 space-y-6">
           {/* Profile Section */}
           <section>
-            <h3 className="text-lg font-medium mb-4 text-white">Profile Information</h3>
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-medium text-white">Profile Information</h3>
+              {isCompleteProfile && (
+                <button
+                  onClick={handleEditProfile}
+                  className="px-3 py-1 text-xs bg-white/20 text-white rounded-lg hover:bg-white/30 transition-colors"
+                >
+                  Edit
+                </button>
+              )}
+            </div>
+
+
             <div className="space-y-4">
               <div>
                 <label className="text-sm text-white/70">Name</label>
-                <p className="text-lg text-white">{`${user?.firstName || ""} ${user?.lastName || ""}`}</p>
+                <p className="text-lg text-white">
+                  {user?.firstName && user?.lastName 
+                    ? `${user.firstName} ${user.lastName}` 
+                    : "Not set"
+                  }
+                </p>
               </div>
               <div>
                 <label className="text-sm text-white/70">Email</label>
-                <p className="text-lg text-white">{user?.email}</p>
+                <p className="text-lg text-white">
+                  {user?.email?.includes('@temp.com') ? (
+                    <span className="text-yellow-300 text-sm">Temporary email - please update</span>
+                  ) : (
+                    user?.email || "Not set"
+                  )}
+                </p>
               </div>
               <div>
                 <label className="text-sm text-white/70">Phone</label>
@@ -171,6 +221,15 @@ export function ProfileDrawer() {
           </section>
         </div>
       </div>
+
+      {/* Profile Completion/Edit Modal */}
+      {showProfileModal && (
+        <ProfileCompletion
+          onComplete={handleProfileComplete}
+          onCancel={handleProfileModalClose}
+          isEdit={isEditMode}
+        />
+      )}
     </>
   )
 } 

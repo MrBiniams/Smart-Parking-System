@@ -48,7 +48,6 @@ export interface ApiError {
     message: string;
   };
 }
-
 interface OtpResponse {
   success: boolean;
   verificationId: string;
@@ -56,6 +55,8 @@ interface OtpResponse {
 
 interface VerifyOtpResponse {
   success: boolean;
+  needsSignup?: boolean;
+  needsProfileCompletion?: boolean;
   jwt: string;
   user: {
     id: number;
@@ -74,6 +75,20 @@ interface VerifyOtpResponse {
       type?: string;
     };
   } | null;
+}
+
+interface ProfileData {
+  email: string;
+  firstName: string;
+  lastName: string;
+  gender: 'male' | 'female';
+}
+
+interface ProfileResponse {
+  success: boolean;
+  jwt: string;
+  user: any;
+  message: string;
 }
 
 interface SignupData {
@@ -324,6 +339,50 @@ class AuthService {
       this.handleError(error as AxiosError<ApiError>);
     }
   }
+
+  // Profile completion for users created by attendants
+  async completeProfile(data: ProfileData): Promise<ProfileResponse> {
+    try {
+      const response = await api.post('/api/auth/complete-profile', data);
+      
+      // Update localStorage with new token
+      if (response.data.jwt) {
+        localStorage.setItem('token', response.data.jwt);
+        api.defaults.headers.common['Authorization'] = `Bearer ${response.data.jwt}`;
+      }
+
+      return response.data;
+    } catch (error) {
+      this.handleError(error as AxiosError<ApiError>);
+    }
+  }
+
+  // Profile editing for complete users
+  async editProfile(data: ProfileData): Promise<ProfileResponse> {
+    try {
+      const response = await api.put('/api/auth/users/me', data);
+      
+      // The user controller doesn't return a JWT, so keep existing token
+      return {
+        success: true,
+        jwt: localStorage.getItem('token') || '',
+        user: response.data,
+        message: 'Profile updated successfully'
+      };
+    } catch (error) {
+      this.handleError(error as AxiosError<ApiError>);
+    }
+  }
+
+  // Helper to detect incomplete profiles (created by attendants for walk-in customers)
+  isIncompleteProfile(user: any): boolean {
+    return user && 
+           user.email && 
+           user.email.includes('@temp.com') && 
+           user.username && 
+           user.username.startsWith('user_+') &&
+           (!user.firstName || !user.lastName);
+  }
 }
 
-export default new AuthService(); 
+export default new AuthService();

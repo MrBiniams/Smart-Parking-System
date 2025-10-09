@@ -8,7 +8,7 @@ export default {
       }
 
       // Simulate sending OTP
-      console.log(`Simulated OTP sent to ${phoneNumber}: 123456`);
+      // In production, integrate with real SMS service
 
       // Return a mock verification ID
       return {
@@ -51,12 +51,25 @@ export default {
         };
       }
 
+      // Get user with role information
+      const userWithRole = await strapi.query('plugin::users-permissions.user').findOne({
+        where: { id: strapiUser.id },
+        populate: ['role']
+      });
+
       // Generate JWT token using users-permissions plugin
       const token = strapi.plugins['users-permissions'].services.jwt.issue({
         id: strapiUser.id,
         documentId: strapiUser.documentId,
         phoneNumber: strapiUser.phoneNumber
       });
+
+      // Check if this is an incomplete profile created by attendant
+      const isIncompleteProfile = strapiUser.email && 
+                                 strapiUser.email.includes('@temp.com') && 
+                                 strapiUser.username && 
+                                 strapiUser.username.startsWith('user_+') &&
+                                 (!strapiUser.firstName || !strapiUser.lastName);
 
       // Remove sensitive data
       const sanitizedUser = {
@@ -66,12 +79,13 @@ export default {
         firstName: strapiUser.firstName,
         lastName: strapiUser.lastName,
         phoneNumber: strapiUser.phoneNumber,
-        role: {}
+        role: userWithRole.role
       };
 
       return {
         success: true,
         needsSignup: false,
+        needsProfileCompletion: isIncompleteProfile, // New flag
         jwt: token,
         user: sanitizedUser
       };
@@ -100,20 +114,77 @@ export default {
       const existingUser = await strapi.query('plugin::users-permissions.user').findOne({
         where: {
           $or: [
-            { email },
             { phoneNumber }
           ]
         }
       });
 
       if (existingUser) {
+        // Check if this is an incomplete user created by attendant booking
+        const isIncompleteUser = existingUser.email && 
+                                existingUser.username && 
+                                existingUser.username.startsWith('user_+');
+        
+        if (isIncompleteUser) {
+          // Get the Authenticated role dynamically
+          const authenticatedRole = await strapi.query('plugin::users-permissions.role').findOne({
+            where: { type: 'authenticated' }
+          });
+
+          if (!authenticatedRole) {
+            return ctx.badRequest('Authenticated role not found');
+          }
+
+          // Update the incomplete user with complete profile data
+          const updatedUser = await strapi.query('plugin::users-permissions.user').update({
+            where: { id: existingUser.id },
+            data: {
+              username: firstName, // Use firstName as username
+              email,
+              firstName,
+              lastName,
+              gender,
+              confirmed: true,
+              blocked: false,
+              role: {
+                connect: [authenticatedRole.id] // Use correct Authenticated role ID
+              }
+            }
+          });
+
+          // Generate JWT token
+          const token = strapi.plugins['users-permissions'].services.jwt.issue({
+            id: updatedUser.id,
+            documentId: updatedUser.documentId,
+            phoneNumber: updatedUser.phoneNumber
+          });
+
+          // Remove sensitive data
+          const sanitizedUser = {
+            id: updatedUser.id,
+            documentId: updatedUser.documentId,
+            email: updatedUser.email,
+            firstName: updatedUser.firstName,
+            lastName: updatedUser.lastName,
+            phoneNumber: updatedUser.phoneNumber,
+            role: updatedUser.role
+          };
+
+          return {
+            success: true,
+            jwt: token,
+            user: sanitizedUser,
+            message: 'Profile completed successfully'
+          };
+        }
+        
         return ctx.badRequest('User with this email, username, or phone number already exists');
       }
 
       // Create new user
       const newUser = await strapi.query('plugin::users-permissions.user').create({
         data: {
-          username: phoneNumber,
+          username: firstName, // Use firstName as username
           email,
           password: Math.random().toString(36).substring(2, 15),
           phoneNumber,
@@ -124,7 +195,7 @@ export default {
           confirmed: true,
           blocked: false,
           role: {
-            connect: [1]
+            connect: [2]
           }
         }
       });
@@ -154,6 +225,191 @@ export default {
       };
     } catch (error) {
       console.error('Signup error:', error);
+      return ctx.badRequest(error.message);
+    }
+  },
+
+  async completeProfile(ctx) {
+    try {
+      const {
+        email, 
+        firstName,
+        lastName,
+        gender
+      } = ctx.request.body;
+      const userId = ctx.state.user?.id;
+
+      if (!userId) {
+        return ctx.unauthorized('User not authenticated');
+      }
+
+      // Validate required fields
+      if (!email || !firstName || !lastName || !gender) {
+        return ctx.badRequest('All fields are required: email, firstName, lastName, gender');
+      }
+
+      // Find the current user
+      const existingUser = await strapi.query('plugin::users-permissions.user').findOne({
+        where: { id: userId }
+      });
+
+      if (!existingUser) {
+        return ctx.notFound('User not found');
+      }
+
+      // Check if this is indeed an incomplete profile
+      const isIncompleteProfile = existingUser.email && 
+                                 existingUser.email.includes('@temp.com') && 
+                                 existingUser.username && 
+                                 existingUser.username.startsWith('user_+');
+
+      if (!isIncompleteProfile) {
+        return ctx.badRequest('Profile is already complete');
+      }
+
+      // Get Authenticated role dynamically
+      const authenticatedRole = await strapi.query('plugin::users-permissions.role').findOne({
+        where: { type: 'authenticated' }
+      });
+
+      if (!authenticatedRole) {
+        return ctx.badRequest('Authenticated role not found');
+      }
+
+      // Update the user profile and assign Authenticated role
+      const updatedUser = await strapi.query('plugin::users-permissions.user').update({
+        where: { id: userId },
+        data: {
+          username: firstName, // Use firstName as username
+          email,
+          firstName,
+          lastName,
+          gender,
+          confirmed: true,
+          blocked: false,
+          role: {
+            connect: [authenticatedRole.id] // Assign Authenticated role dynamically
+          }
+        }
+      });
+
+      // Generate new JWT token
+      const token = strapi.plugins['users-permissions'].services.jwt.issue({
+        id: updatedUser.id
+      });
+
+      // Remove sensitive data
+      const sanitizedUser = {
+        id: updatedUser.id,
+        documentId: updatedUser.documentId,
+        email: updatedUser.email,
+        firstName: updatedUser.firstName,
+        lastName: updatedUser.lastName,
+        phoneNumber: updatedUser.phoneNumber,
+        role: updatedUser.role
+      };
+
+
+      return {
+        success: true,
+        jwt: token,
+        user: sanitizedUser,
+        message: 'Profile completed successfully'
+      };
+    } catch (error) {
+      console.error('Profile completion error:', error);
+      return ctx.badRequest(error.message);
+    }
+  },
+
+  async editProfile(ctx) {
+    try {
+      const {
+        email, 
+        firstName,
+        lastName,
+        gender
+      } = ctx.request.body;
+      const userId = ctx.state.user?.id;
+
+      if (!userId) {
+        return ctx.unauthorized('User not authenticated');
+      }
+
+      // Validate required fields
+      if (!email || !firstName || !lastName || !gender) {
+        return ctx.badRequest('All fields are required: email, firstName, lastName, gender');
+      }
+
+      // Find the current user
+      const existingUser = await strapi.query('plugin::users-permissions.user').findOne({
+        where: { id: userId },
+        populate: ['role']
+      });
+
+      if (!existingUser) {
+        return ctx.notFound('User not found');
+      }
+
+      // Check if this is a complete profile (not temp user)
+      const isCompleteProfile = existingUser.email && 
+                               !existingUser.email.includes('@temp.com') && 
+                               existingUser.firstName && 
+                               existingUser.lastName;
+
+      if (!isCompleteProfile) {
+        return ctx.badRequest('Use complete-profile endpoint for incomplete profiles');
+      }
+
+      // Validate email uniqueness (exclude current user)
+      const emailExists = await strapi.query('plugin::users-permissions.user').findOne({
+        where: { 
+          email: email,
+          id: { $ne: userId }
+        }
+      });
+
+      if (emailExists) {
+        return ctx.badRequest('Email is already in use by another user');
+      }
+
+      // Update the user profile including username
+      const updatedUser = await strapi.query('plugin::users-permissions.user').update({
+        where: { id: userId },
+        data: {
+          username: firstName, // Set username to firstName
+          email,
+          firstName,
+          lastName,
+          gender,
+        }
+      });
+
+      // Generate new JWT token
+      const token = strapi.plugins['users-permissions'].services.jwt.issue({
+        id: updatedUser.id
+      });
+
+      // Remove sensitive data
+      const sanitizedUser = {
+        id: updatedUser.id,
+        documentId: updatedUser.documentId,
+        email: updatedUser.email,
+        firstName: updatedUser.firstName,
+        lastName: updatedUser.lastName,
+        phoneNumber: updatedUser.phoneNumber,
+        role: updatedUser.role
+      };
+
+
+      return {
+        success: true,
+        jwt: token,
+        user: sanitizedUser,
+        message: 'Profile updated successfully'
+      };
+    } catch (error) {
+      console.error('Profile edit error:', error);
       return ctx.badRequest(error.message);
     }
   },
@@ -280,7 +536,11 @@ export default {
   async changeAttendantPassword(ctx) {
     try {
       const { currentPassword, newPassword } = ctx.request.body;
-      const userId = ctx.state.user.id;
+      const userId = ctx.state.user?.id;
+
+      if (!userId) {
+        return ctx.unauthorized('User not authenticated');
+      }
 
       if (!currentPassword || !newPassword) {
         return ctx.badRequest('Please provide both current and new password');

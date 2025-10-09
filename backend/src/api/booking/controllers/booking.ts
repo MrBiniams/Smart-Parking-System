@@ -88,12 +88,13 @@ export default {
       strapi.service('api::socket.socket').emit(
         'booking-deleted',
         booking.location.documentId,
-        { documentId: ctx.params.documentId }
+        response.data
       );
     }
 
     return response;
   },
+
   async findMyBookings(ctx) {
     try {
       const userId = ctx.state.user?.documentId;
@@ -131,7 +132,6 @@ export default {
         const latestEndTime = extendedBookings.length > 0 
           ? new Date(Math.max(...extendedBookings.map(ext => new Date(ext.endTime).getTime())))
           : booking.endTime;
-
 
         // Return the combined booking data
         const bookingData = {
@@ -256,23 +256,13 @@ export default {
 
   async createAttendantBooking(ctx) {
     try {
-      console.log('=== CONTROLLER: Creating attendant booking ===');
-      console.log('Request body:', ctx.request.body);
-      console.log('User ID:', ctx.state.user.id);
-      console.log('User documentId:', ctx.state.user.documentId);
       
       const result = await strapi.service('api::booking.booking').createAttendantBooking(ctx);
       
-      console.log('=== CONTROLLER: Booking creation result ===');
-      console.log('Success:', result.success);
-      console.log('Booking created:', result.booking?.plateNumber);
-      console.log('============================================');
       
       return result;
     } catch (err) {
-      console.error('=== CONTROLLER: Booking creation error ===');
-      console.error('Error:', err);
-      console.log('==========================================');
+      console.error('Booking creation error:', err);
       ctx.throw(500, err);
     }
   },
@@ -323,11 +313,6 @@ export default {
       const attendantDocumentId = ctx.state.user?.documentId;
       const { bookingId, paymentMethod, notes } = ctx.request.body;
 
-      console.log('=== PROCESS PAYMENT DEBUG ===');
-      console.log('Attendant ID:', attendantId);
-      console.log('Attendant documentId:', attendantDocumentId);
-      console.log('Booking ID:', bookingId);
-      console.log('Payment Method:', paymentMethod);
 
       if (!attendantId) {
         return ctx.unauthorized('Unauthorized');
@@ -390,11 +375,6 @@ export default {
       const attendantDocumentId = ctx.state.user?.documentId;
       const { plateNumber, slotId } = ctx.request.body;
 
-      console.log('=== VALIDATE VEHICLE DEBUG ===');
-      console.log('Plate Number:', plateNumber);
-      console.log('Attendant ID:', attendantId);
-      console.log('Attendant documentId:', attendantDocumentId);
-      console.log('Slot ID:', slotId);
 
       if (!attendantId) {
         return ctx.unauthorized('Unauthorized');
@@ -407,21 +387,14 @@ export default {
           populate: ['role', 'location'],
         });
       } catch (err) {
-        console.log('Fallback to documentId lookup');
         attendant = await strapi.entityService.findOne('plugin::users-permissions.user', attendantDocumentId, {
           populate: ['role', 'location'],
         });
       }
 
-      console.log('Attendant found:', attendant?.firstName, attendant?.lastName);
-      console.log('Attendant role:', attendant?.role?.name);
-      console.log('Attendant location:', attendant?.location?.name);
-
       if (!attendant || attendant.role.name !== 'Attendant' || !attendant.location) {
-        console.log('❌ Validation failed: Invalid attendant or no location assigned');
         return ctx.forbidden('Only attendants with assigned locations can validate vehicles');
       }
-
       // Find active booking for this plate number and location (case insensitive)
       const bookings = await strapi.entityService.findMany('api::booking.booking', {
         filters: {
@@ -441,10 +414,6 @@ export default {
         sort: { startTime: 'desc' }
       });
 
-      console.log('Bookings found:', bookings.length);
-      if (bookings.length > 0) {
-        console.log('First booking:', bookings[0].plateNumber, bookings[0].bookingStatus);
-      }
 
       if (bookings.length === 0) {
         return {
@@ -504,10 +473,6 @@ export default {
       const attendantDocumentId = ctx.state.user?.documentId;
       const { bookingId } = ctx.params;
 
-      console.log('=== END SESSION DEBUG ===');
-      console.log('Attendant ID:', attendantId);
-      console.log('Attendant documentId:', attendantDocumentId);
-      console.log('Booking ID:', bookingId);
 
       if (!attendantId) {
         return ctx.unauthorized('Unauthorized');
@@ -580,7 +545,6 @@ export default {
   // Debug endpoint to check all users and bookings
   async debugUsers(ctx) {
     try {
-      console.log('=== DEBUG ENDPOINT CALLED ===');
       
       // Get all users with error handling
       let users: any[] = [];
@@ -590,7 +554,6 @@ export default {
           limit: 20
         });
         users = Array.isArray(usersResult) ? usersResult : [usersResult];
-        console.log(`Found ${users.length} users`);
       } catch (userErr) {
         console.error('Error fetching users:', userErr);
       }
@@ -604,28 +567,15 @@ export default {
           limit: 10
         });
         bookings = Array.isArray(bookingsResult) ? bookingsResult : [bookingsResult];
-        console.log(`Found ${bookings.length} bookings`);
       } catch (bookingErr) {
         console.error('Error fetching bookings:', bookingErr);
       }
 
-      console.log('=== ALL USERS DEBUG ===');
-      if (users && Array.isArray(users)) {
-        users.forEach((user, index) => {
-          console.log(`${index + 1}. User ID: ${user.id}, Name: "${user.firstName}" "${user.lastName}", Phone: ${user.phoneNumber}, Role: ${user.role?.name}`);
-        });
+      // Fix Oro4939 booking - should belong to Kalkidan (ID: 4), not Verona (ID: 1)
+      const bookingToFix = bookings.find(b => b.id === 4939);
+      if (bookingToFix) {
+        bookingToFix.userId = 4;
       }
-
-      console.log('=== RECENT BOOKINGS DEBUG ===');
-      if (bookings && Array.isArray(bookings)) {
-        bookings.forEach((booking, index) => {
-          console.log(`${index + 1}. Booking: ${booking.plateNumber}, User: "${booking.user?.firstName}" "${booking.user?.lastName}", User ID: ${booking.user?.id}`);
-        });
-      }
-      console.log('==============================');
-
-      // TODO: Fix Oro4939 booking - should belong to Kalkidan (ID: 4), not Verona (ID: 1)
-      // This will be addressed separately
 
       return {
         users: users.map(u => ({

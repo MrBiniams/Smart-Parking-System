@@ -340,6 +340,18 @@ export default ({ strapi }) => ({
       });
 
       if (user.length === 0) {
+        // Get the Authenticated role dynamically
+        const authenticatedRole = await strapi.query('plugin::users-permissions.role').findOne({
+          where: { type: 'authenticated' }
+        });
+
+        if (!authenticatedRole) {
+          return {
+            error: 'Authenticated role not found',
+            status: 500
+          };
+        }
+
         // Create new user with phone number
         user = await strapi.entityService.create('plugin::users-permissions.user', {
           data: {
@@ -347,7 +359,7 @@ export default ({ strapi }) => ({
             email: `${phoneNumber}@temp.com`,
             phoneNumber: phoneNumber,
             provider: 'local',
-            role: 2, // Default authenticated role
+            role: authenticatedRole.id, // Use correct Authenticated role ID
             confirmed: true,
             blocked: false,
           }

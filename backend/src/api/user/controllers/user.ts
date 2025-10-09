@@ -213,21 +213,31 @@ export default factories.createCoreController('plugin::users-permissions.user', 
         ctx.throw(401, 'Not authenticated');
       }
 
-      // Use core controller update method
-      const response = await super.update(ctx);
+      // Get the update data from request body
+      const { firstName, lastName, email, gender } = ctx.request.body;
+
+      // Update the user directly using entityService
+      const updatedUser = await strapi.entityService.update('plugin::users-permissions.user', user.id, {
+        data: {
+          firstName,
+          lastName,
+          email,
+          gender
+        } as any
+      });
 
       // Remove sensitive data
       const sanitizedUser = {
-        id: response.data.id,
-        documentId: user.documentId,
-        username: response.data.username,
-        email: response.data.email,
-        phoneNumber: response.data.phoneNumber,
-        firstName: response.data.firstName,
-        lastName: response.data.lastName,
-        gender: response.data.gender,
-        role: response.data.role,
-        userSettings: response.data.userSettings
+        id: updatedUser.id,
+        documentId: updatedUser.documentId,
+        username: updatedUser.username,
+        email: updatedUser.email,
+        phoneNumber: updatedUser.phoneNumber,
+        firstName: updatedUser.firstName,
+        lastName: updatedUser.lastName,
+        gender: updatedUser.gender,
+        role: updatedUser.role,
+        userSettings: updatedUser.userSettings
       };
 
       ctx.body = sanitizedUser;

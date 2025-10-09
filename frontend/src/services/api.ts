@@ -9,8 +9,18 @@ const api = axios.create({
 
 // Add auth token to requests if available
 api.interceptors.request.use((config) => {
-  const user = JSON.parse(localStorage.getItem('user-storage') || '{}');
-  const token = user?.state?.token;
+  // Try multiple token storage locations for compatibility
+  let token = null;
+  
+  // First, try the direct token storage (used by auth service)
+  token = localStorage.getItem('token');
+  
+  // Fallback to user-storage format (legacy)
+  if (!token) {
+    const user = JSON.parse(localStorage.getItem('user-storage') || '{}');
+    token = user?.state?.token;
+  }
+  
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
   }
@@ -60,17 +70,19 @@ export interface Slot {
 
 export interface Booking {
   id: string;
-  user: {
+  documentId?: string;
+  user?: {
     id: string;
     username: string;
-    email: string;
+    email?: string;
+    phoneNumber?: string;
   };
-  slot: {
+  slot?: {
     id: string;
     name: string;
     type: string;
   };
-  location: {
+  location?: {
     id: string;
     name: string;
     address: string;
@@ -245,7 +257,7 @@ export const fetchSlotsByLocation = async (locationId: string): Promise<Slot[]> 
 export const fetchAttendantBookings = async (locationId: string): Promise<Booking[]> => {
   try {
     const response = await bookingService.getAttendantBookings(locationId);
-    return response.data.map((booking: any) => ({
+    return response.data.map((booking: any): Booking => ({
       id: booking.id,
       documentId: booking.documentId,
       plateNumber: booking.plateNumber,
@@ -257,7 +269,8 @@ export const fetchAttendantBookings = async (locationId: string): Promise<Bookin
       user: booking.user ? {
         id: booking.user.id,
         username: booking.user.username,
-        phoneNumber: booking.user.phoneNumber
+        phoneNumber: booking.user.phoneNumber,
+        email: booking.user.email
       } : undefined,
       slot: booking.slot ? {
         id: booking.slot.id,
