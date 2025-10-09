@@ -677,7 +677,6 @@ const ParkingSessionsTab: React.FC<{ assignedLocation: AttendantLocation | null;
     plateNumber: '',
     duration: '2',
     customerPhone: '',
-    customerName: '',
     slotId: ''
   });
 
@@ -797,7 +796,6 @@ const ParkingSessionsTab: React.FC<{ assignedLocation: AttendantLocation | null;
         plateNumber: formData.plateNumber.toUpperCase(),
         time: formData.duration, // Backend expects 'time' not duration
         phoneNumber: formData.customerPhone || '+251900000000', // Backend requires phoneNumber
-        customerName: formData.customerName || 'Walk-in Customer',
       };
 
       console.log('=== CREATING ATTENDANT BOOKING ===');
@@ -813,13 +811,17 @@ const ParkingSessionsTab: React.FC<{ assignedLocation: AttendantLocation | null;
         plateNumber: '',
         duration: '2',
         customerPhone: '',
-        customerName: '',
         slotId: availableSlots.length > 0 ? availableSlots[0]?.documentId || '' : ''
       });
       
       // Reload data
       loadActiveSessions();
       loadAvailableSlots();
+      
+      // Refresh dashboard stats
+      if (onRefresh) {
+        onRefresh();
+      }
       
     } catch (err: any) {
       setError(err.message);
@@ -929,19 +931,6 @@ const ParkingSessionsTab: React.FC<{ assignedLocation: AttendantLocation | null;
                 value={formData.customerPhone}
                 onChange={handleInputChange}
                 placeholder="+251 911 234 567"
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white text-black placeholder-gray-600 font-medium"
-              />
-            </div>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Customer Name</label>
-              <input
-                type="text"
-                name="customerName"
-                value={formData.customerName}
-                onChange={handleInputChange}
-                placeholder="John Doe"
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white text-black placeholder-gray-600 font-medium"
               />
             </div>

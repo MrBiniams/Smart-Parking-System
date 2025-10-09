@@ -443,10 +443,27 @@ export default ({ strapi }) => ({
         data: bookingData
       });
 
+      // Update slot status to occupied since booking is active
+      console.log('=== UPDATING SLOT STATUS ===');
+      console.log('Slot ID:', slot.documentId);
+      console.log('Current Status:', slot.slotStatus);
+      console.log('New Status: occupied');
+      
+      await strapi.entityService.update('api::slot.slot', slot.documentId, {
+        data: {
+          slotStatus: 'occupied',
+          publishedAt: new Date()
+        }
+      });
+      
+      console.log('✅ Slot status updated to occupied');
+      console.log('============================');
+
       console.log('=== ATTENDANT BOOKING CREATED ===');
       console.log('Booking ID:', booking.documentId);
       console.log('Plate Number:', booking.plateNumber);
       console.log('Status:', booking.bookingStatus);
+      console.log('Slot Status Updated:', 'occupied');
       console.log('User ID:', booking.user);
       console.log('Attendant ID:', booking.attendantUser);
       console.log('================================');

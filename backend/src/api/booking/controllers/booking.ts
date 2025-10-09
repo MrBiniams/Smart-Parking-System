@@ -531,7 +531,7 @@ export default {
 
       // Update slot status to available
       if (booking.slot) {
-        await strapi.entityService.update('api::slot.slot', booking.slot.id, {
+        await strapi.entityService.update('api::slot.slot', booking.slot.documentId || booking.slot.id, {
           data: {
             slotStatus: 'available',
             publishedAt: new Date()

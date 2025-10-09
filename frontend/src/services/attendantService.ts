@@ -100,7 +100,6 @@ class AttendantService {
     plateNumber: string;
     time: string;
     phoneNumber: string;
-    customerName?: string;
   }): Promise<AttendantBooking> {
     try {
       const response = await axios.post(
