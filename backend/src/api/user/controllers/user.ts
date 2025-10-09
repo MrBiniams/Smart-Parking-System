@@ -26,9 +26,40 @@ export default factories.createCoreController('plugin::users-permissions.user', 
   },
 
   async update(ctx) {
-    // Add custom logic here if needed
-    const response = await super.update(ctx);
-    return response;
+    try {
+      const { id } = ctx.params;
+      const { data } = ctx.request.body;
+
+      if (!data) {
+        ctx.throw(400, 'Missing data in request body');
+      }
+
+      // Update the user using entityService
+      const updatedUser = await strapi.entityService.update('plugin::users-permissions.user', id, {
+        data
+      });
+
+      // Return sanitized user data
+      const sanitizedUser = {
+        id: updatedUser.id,
+        documentId: updatedUser.documentId,
+        username: updatedUser.username,
+        email: updatedUser.email,
+        phoneNumber: updatedUser.phoneNumber,
+        firstName: updatedUser.firstName,
+        lastName: updatedUser.lastName,
+        gender: updatedUser.gender,
+        isPhoneVerified: updatedUser.isPhoneVerified,
+        role: updatedUser.role,
+        userSettings: updatedUser.userSettings,
+        createdAt: updatedUser.createdAt,
+        updatedAt: updatedUser.updatedAt
+      };
+
+      ctx.body = sanitizedUser;
+    } catch (error) {
+      ctx.throw(error.status || 500, error.message || 'Internal server error');
+    }
   },
 
   async delete(ctx) {
@@ -290,6 +321,37 @@ export default factories.createCoreController('plugin::users-permissions.user', 
         )
       };
 
+    } catch (error) {
+      ctx.throw(error.status || 500, error.message || 'Internal server error');
+    }
+  },
+
+  async me(ctx: Context) {
+    try {
+      const user = ctx.state.user;
+
+      if (!user) {
+        ctx.throw(401, 'Not authenticated');
+      }
+
+      // Return sanitized user data
+      const sanitizedUser = {
+        id: user.id,
+        documentId: user.documentId,
+        username: user.username,
+        email: user.email,
+        phoneNumber: user.phoneNumber,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        gender: user.gender,
+        isPhoneVerified: user.isPhoneVerified,
+        role: user.role,
+        userSettings: user.userSettings,
+        createdAt: user.createdAt,
+        updatedAt: user.updatedAt
+      };
+
+      ctx.body = sanitizedUser;
     } catch (error) {
       ctx.throw(error.status || 500, error.message || 'Internal server error');
     }

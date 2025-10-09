@@ -102,6 +102,21 @@ interface SignupData {
 }
 
 class AuthService {
+  constructor() {
+    // Initialize token from localStorage on service creation
+    this.initializeToken();
+  }
+
+  private initializeToken(): void {
+    // Check if we're in the browser environment
+    if (typeof window !== 'undefined') {
+      const token = localStorage.getItem('token');
+      if (token) {
+        api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+      }
+    }
+  }
+
   private handleError(error: AxiosError<ApiError>): never {
     // Try different possible error message locations
     const message = 
@@ -170,6 +185,9 @@ class AuthService {
 
   async getCurrentUser(): Promise<AuthResponse['user']> {
     try {
+      if (typeof window === 'undefined') {
+        throw new Error('Not in browser environment');
+      }
       const token = localStorage.getItem('token');
       if (!token) {
         throw new Error('No token found');
@@ -184,7 +202,8 @@ class AuthService {
 
   async updateProfile(data: Partial<RegisterData>): Promise<AuthResponse['user']> {
     try {
-      const response = await api.put('/api/auth/users/me', data);
+      const user = await this.getCurrentUser();
+      const response = await api.put(`/api/users/${user.id}`, data);
       return response.data;
     } catch (error) {
       this.handleError(error as AxiosError<ApiError>);
@@ -192,11 +211,16 @@ class AuthService {
   }
 
   logout(): void {
-    localStorage.removeItem('token');
+    if (typeof window !== 'undefined') {
+      localStorage.removeItem('token');
+    }
     delete api.defaults.headers.common['Authorization'];
   }
 
   isAuthenticated(): boolean {
+    if (typeof window === 'undefined') {
+      return false;
+    }
     return !!localStorage.getItem('token');
   }
 
@@ -360,7 +384,42 @@ class AuthService {
   // Profile editing for complete users
   async editProfile(data: ProfileData): Promise<ProfileResponse> {
     try {
-      const response = await api.put('/api/auth/users/me', data);
+      // Ensure token is set in headers
+      if (typeof window === 'undefined') {
+        throw new Error('Not in browser environment');
+      }
+      
+      // Get token from localStorage or Zustand storage
+      const directToken = localStorage.getItem('token');
+      const userStorage = localStorage.getItem('user-storage');
+      let zustandToken = null;
+      
+      if (userStorage) {
+        try {
+          const parsed = JSON.parse(userStorage);
+          zustandToken = parsed.state?.token;
+        } catch (e) {
+          // Ignore parsing errors
+        }
+      }
+      
+      const token = directToken || zustandToken;
+      
+      if (!token) {
+        throw new Error('No token found');
+      }
+      api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+      
+      // Decode the user ID from the JWT token
+      let userId;
+      try {
+        const payload = JSON.parse(atob(token.split('.')[1]));
+        userId = payload.id;
+      } catch (error) {
+        throw new Error('Invalid token format');
+      }
+      
+      const response = await api.put(`/api/users/${userId}`, { data });
       
       // The user controller doesn't return a JWT, so keep existing token
       return {

@@ -33,34 +33,17 @@ export default {
     {
       method: 'GET',
       path: '/auth/users/me',
-      handler: 'user.getCurrentUser',
+      handler: 'user.me',
       config: {
         auth: {
           strategy: 'jwt'
         },
         policies: [],
-        description: 'Get current user',
+        description: 'Get current user profile',
         tag: {
           plugin: 'users-permissions',
           name: 'User',
-          actionType: 'getCurrentUser'
-        }
-      }
-    },
-    {
-      method: 'PUT',
-      path: '/auth/users/me',
-      handler: 'user.updateProfile',
-      config: {
-        auth: {
-          strategy: 'jwt'
-        },
-        policies: [],
-        description: 'Update current user profile',
-        tag: {
-          plugin: 'users-permissions',
-          name: 'User',
-          actionType: 'updateProfile'
+          actionType: 'me'
         }
       }
     },
@@ -70,7 +53,7 @@ export default {
       handler: 'user.checkPermission',
       config: {
         auth: {
-          scope: ['users-permissions']
+          strategy: 'jwt'
         },
         policies: [],
         description: 'Check if user has specific permission',
@@ -87,7 +70,7 @@ export default {
       handler: 'user.checkPermissions',
       config: {
         auth: {
-          scope: ['users-permissions']
+          strategy: 'jwt'
         },
         policies: [],
         description: 'Check if user has all specified permissions',

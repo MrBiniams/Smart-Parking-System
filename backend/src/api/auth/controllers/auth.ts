@@ -57,11 +57,9 @@ export default {
         populate: ['role']
       });
 
-      // Generate JWT token using users-permissions plugin
+      // Generate JWT token using users-permissions plugin with correct secret
       const token = strapi.plugins['users-permissions'].services.jwt.issue({
-        id: strapiUser.id,
-        documentId: strapiUser.documentId,
-        phoneNumber: strapiUser.phoneNumber
+        id: strapiUser.id
       });
 
       // Check if this is an incomplete profile created by attendant
@@ -154,9 +152,7 @@ export default {
 
           // Generate JWT token
           const token = strapi.plugins['users-permissions'].services.jwt.issue({
-            id: updatedUser.id,
-            documentId: updatedUser.documentId,
-            phoneNumber: updatedUser.phoneNumber
+            id: updatedUser.id
           });
 
           // Remove sensitive data
@@ -181,6 +177,15 @@ export default {
         return ctx.badRequest('User with this email, username, or phone number already exists');
       }
 
+      // Get the Authenticated role dynamically
+      const authenticatedRole = await strapi.query('plugin::users-permissions.role').findOne({
+        where: { type: 'authenticated' }
+      });
+
+      if (!authenticatedRole) {
+        return ctx.badRequest('Authenticated role not found');
+      }
+
       // Create new user
       const newUser = await strapi.query('plugin::users-permissions.user').create({
         data: {
@@ -195,16 +200,14 @@ export default {
           confirmed: true,
           blocked: false,
           role: {
-            connect: [2]
+            connect: [authenticatedRole.id] // Use dynamic Authenticated role ID
           }
         }
       });
 
       // Generate JWT token using users-permissions plugin
       const token = strapi.plugins['users-permissions'].services.jwt.issue({
-        id: newUser.id,
-        documentId: newUser.documentId,
-        phoneNumber: newUser.phoneNumber
+        id: newUser.id
       });
 
       // Remove sensitive data
@@ -507,8 +510,7 @@ export default {
 
       // Generate JWT token
       const token = strapi.plugins['users-permissions'].services.jwt.issue({
-        id: user.id,
-        phoneNumber: user.phoneNumber
+        id: user.id
       });
 
       // Remove sensitive data

@@ -97,10 +97,17 @@ export default {
 
   async findMyBookings(ctx) {
     try {
+      console.log('🔍 findMyBookings called');
+      console.log('🔍 ctx.state:', ctx.state);
+      console.log('🔍 ctx.state.user:', ctx.state.user);
+      
       const userId = ctx.state.user?.documentId;
       if (!userId) {
+        console.log('❌ No userId found');
         return ctx.unauthorized('User not authenticated');
       }
+      
+      console.log('✅ userId:', userId);
 
       // First get all original bookings that are active
       const originalBookings = await strapi.entityService.findMany('api::booking.booking', {
